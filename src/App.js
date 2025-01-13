@@ -8,6 +8,8 @@ import TestimonialsSection from './components/TestimonialsSection';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import TicketsPage from './pages/TicketsPage';
+import Login from './pages/Login';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
             />
             {/* 승차권 페이지 */}
             <Route path="/pricing" element={<TicketsPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </main>
         <Footer />
