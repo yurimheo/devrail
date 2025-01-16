@@ -9,6 +9,8 @@ import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import PricingPage from './pages/PricingPage';
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import Login from './pages/Login';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
             {/* 승차권 페이지 */}
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/payment-success" element={<PaymentSuccessPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </main>
         <Footer />
