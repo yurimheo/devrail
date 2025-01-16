@@ -7,7 +7,8 @@ import LearningPathSection from './components/LearningPathSection';
 import TestimonialsSection from './components/TestimonialsSection';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
-import TicketsPage from './pages/TicketsPage';
+import PricingPage from './pages/PricingPage';
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 
 function App() {
   return (
@@ -31,7 +32,8 @@ function App() {
               }
             />
             {/* 승차권 페이지 */}
-            <Route path="/pricing" element={<TicketsPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/payment-success" element={<PaymentSuccessPage />} />
           </Routes>
         </main>
         <Footer />
