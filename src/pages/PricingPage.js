@@ -64,8 +64,9 @@ const PricingPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen pb-12">
-      <div className="w-full container mx-auto shadow-xl mt-8 p-8 bg-white rounded-2xl">
+    <div className="bg-gray-100 min-h-screen">
+      <div className="container mx-auto pt-2 pb-16">
+      <div className="w-full container mx-auto shadow-xl p-8 bg-white rounded-2xl">
         {showQRCode ? (
           <motion.div
           className={`flex flex-col items-center justify-center p-6 rounded-lg w-full max-w-md mx-auto ${
@@ -225,6 +226,7 @@ const PricingPage = () => {
             </div>
           </>
         )}
+      </div>
       </div>
     </div>
   );
