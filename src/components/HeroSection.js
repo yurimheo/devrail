@@ -1,6 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Button({ size, variant, children }) {
+function Button({ size, variant, children, onClick }) {
   const baseStyles = "px-6 py-2 rounded font-semibold";
   const sizeStyles = size === "lg" ? "text-lg" : "text-base";
   const variantStyles =
@@ -9,13 +10,19 @@ function Button({ size, variant, children }) {
       : "bg-primary text-white";
 
   return (
-    <button className={`${baseStyles} ${sizeStyles} ${variantStyles}`}>
+    <button
+      className={`${baseStyles} ${sizeStyles} ${variantStyles}`}
+      onClick={onClick} 
+    >
       {children}
     </button>
   );
 }
 
+
 export default function HeroSection() {
+  const navigate = useNavigate();
+
   return (
     <section className="bg-gradient-to-r from-black to-white text-white py-20">
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
@@ -30,8 +37,8 @@ export default function HeroSection() {
             Docker부터 Kubernetes까지, DevOps의 모든 여정을 함께합니다.
           </p>
           <div className="flex space-x-4">
-            <Button size="lg" variant="secondary">탑승권 보기</Button>
-            <Button size="lg">지금 승차하기</Button>
+            <Button size="lg" variant="secondary" onClick={() => navigate("/pricing")}>탑승권 보기</Button>
+            <Button size="lg" onClick={() => navigate("/login")}>지금 승차하기</Button>
           </div>
         </div>
 
