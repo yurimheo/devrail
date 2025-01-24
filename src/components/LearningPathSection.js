@@ -11,7 +11,7 @@ const learningPath = [
   { name: 'GitHub역', description: '버전 관리 및 협업 툴', route: 'github', isDisabled: false },
   { name: 'Terraform역', description: '인프라 자동화', route: 'terraform', isDisabled: true },
   { name: 'Monitoring역', description: '시스템 모니터링', route: 'monitoring', isDisabled: true },
-  { name: 'Mysql역', description: '데이터베이스 설계 및 관리', route: 'mysql', isDisabled: true },
+  { name: 'Mysql역', description: '관계형 데이터베이스', route: 'mysql', isDisabled: true },
 ];
 
 export default function LearningPathSection() {
@@ -45,11 +45,10 @@ export default function LearningPathSection() {
 
           {/* 기차 애니메이션 */}
           <img
-            src="/images/train.png" // 기차 이미지 경로
+            src="/images/train.png" 
             alt="Train"
             className="absolute left-1/2 transform -translate-x-1/2 translate-y-[-50%] w-12 h-auto transition-transform duration-500"
             style={{
-              // 각 정거장의 위치에 맞게 기차 이동
               transform: `translateY(${activeStation !== null ? (activeStation * 150) : 0}px) translateX(-50%)`
             }}
           />
@@ -62,8 +61,8 @@ export default function LearningPathSection() {
               {/* 텍스트와 버튼 */}
               <div
                 className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}
-                onMouseEnter={() => handleHover(index)}  // hover 시 activeStation 설정
-                onMouseLeave={handleLeave}  // hover를 벗어날 때 activeStation을 null로 설정
+                onMouseEnter={() => handleHover(index)} 
+                onMouseLeave={handleLeave} 
               >
                 <h3 className={`text-xl font-bold ${station.isDisabled ? 'text-gray-400' : 'text-black'}`}>
                   {station.name}

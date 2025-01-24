@@ -24,10 +24,10 @@ const ContactPage = () => {
     setIsLoading(true);
   
     try {
-      const response = await axios.post("/api/contact", formData);  // response 변수 사용
+      const response = await axios.post("/api/contact", formData); 
       setResponseMessage("문의가 전송되었습니다. 감사합니다.");
       setFormData({ subject: "", email: "", message: "" });
-      console.log(response); // 응답을 활용 (예: 성공 메시지 출력)
+      console.log(response);
     } catch (error) {
       setResponseMessage("문제가 발생했습니다. 다시 시도해주세요.");
     } finally {

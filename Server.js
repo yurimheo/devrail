@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "devrail2025@gmail.com", // 비즈니스 이메일 주소
+    user: "devrail2025@gmail.com", // 이메일 주소
     pass: "orderofthephoenix5@", // 이메일 비밀번호
   },
 });
@@ -22,7 +22,7 @@ app.post("/api/contact", (req, res) => {
 
   const mailOptions = {
     from: email,
-    to: "devrail2025@gmail.com", // 비즈니스 이메일 주소
+    to: "devrail2025@gmail.com", // 이메일 주소
     subject: `문의: ${subject}`,
     text: `이메일: ${email}\n내용: ${message}`,
   };

@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Card 컴포넌트 구현
+// 카드 컴포넌트
 function Card({ children }) {
   return <div className="bg-white shadow-md rounded-lg p-4">{children}</div>;
 }
@@ -17,7 +17,7 @@ function CardContent({ children }) {
   return <div>{children}</div>;
 }
 
-// Testimonials 데이터
+// 사용후기 데이터
 const testimonials = [
   {
     name: '강영규',
