@@ -1,7 +1,7 @@
 import React from 'react';
-import { motion } from 'framer-motion'; // framer-motion을 이용한 애니메이션 추가
-import { FaTools, FaProjectDiagram, FaUsers } from 'react-icons/fa'; // 아이콘 추가
-import { Typewriter } from 'react-simple-typewriter'; // 타이핑 애니메이션
+import { motion } from 'framer-motion';
+import { FaTools, FaProjectDiagram, FaUsers } from 'react-icons/fa'; 
+import { Typewriter } from 'react-simple-typewriter'; 
 
 const AboutPage = () => {
   return (
@@ -69,7 +69,7 @@ const AboutPage = () => {
                 loop={1}
                 cursor
                 cursorStyle="_"
-                typeSpeed={120} // 타이핑 속도를 살짝 느리게 설정
+                typeSpeed={120} 
                 deleteSpeed={50}
                 delaySpeed={1000}
               />
@@ -111,7 +111,7 @@ const AboutPage = () => {
                 loop={1}
                 cursor
                 cursorStyle="_"
-                typeSpeed={120} // 타이핑 속도를 살짝 느리게 설정
+                typeSpeed={120} 
                 deleteSpeed={50}
                 delaySpeed={1000}
               />
@@ -151,7 +151,7 @@ const AboutPage = () => {
                 loop={1}
                 cursor
                 cursorStyle="_"
-                typeSpeed={120} // 타이핑 속도를 살짝 느리게 설정
+                typeSpeed={120} 
                 deleteSpeed={50}
                 delaySpeed={1000}
               />

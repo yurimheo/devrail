@@ -64,7 +64,7 @@ const PaymentSuccessPage = () => {
             <div className="flex flex-col items-center">
               <span className="text-gray-600">구매일:</span>
               <p className="text-xl font-semibold mb-6">{new Date().toLocaleDateString()}</p>
-              <img src="/qr-code.png" alt="QR Code" className="w-24 h-24" />
+              <img src="/images/qr-code.png" alt="QR Code" className="w-24 h-24" />
               <p className="text-sm text-gray-600 mt-2">승차권 확인 QR 코드</p>
             </div>
           </div>

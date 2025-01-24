@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Button 컴포넌트 정의
+// 버튼
 function Button({ size, variant, children, onClick }) {
   const baseStyles = "px-4 py-2 font-semibold rounded transition duration-300";
   const sizeStyles = size === "lg" ? "text-lg" : "text-base";
@@ -24,7 +24,7 @@ export default function CTASection() {
 
   const handleButtonClick = (route) => {
     navigate(route);
-    window.scrollTo(0, 0); // 버튼 클릭 후 화면을 상단으로 스크롤
+    window.scrollTo(0, 0); 
   };
 
   return (

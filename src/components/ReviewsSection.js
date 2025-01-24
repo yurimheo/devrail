@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Card 컴포넌트 구현
+// 카드 컴포넌트
 function Card({ children }) {
   return <div className="bg-white shadow-md rounded-lg p-4">{children}</div>;
 }
@@ -17,25 +17,25 @@ function CardContent({ children }) {
   return <div>{children}</div>;
 }
 
-// Testimonials 데이터
+// 사용후기 데이터
 const testimonials = [
   {
     name: '강영규',
     role: 'Junior DevOps Engineer',
     content: 'DevRail 덕분에 Docker를 마스터하고 첫 DevOps 프로젝트를 성공적으로 완료했습니다!',
-    avatar: '/avatar1.png',
+    avatar: '/images/avatar1.png',
   },
   {
     name: '김건',
     role: 'Senior Software Developer',
     content: 'Kubernetes 학습이 어려웠는데, DevRail의 실습 중심 커리큘럼으로 쉽게 익힐 수 있었어요.',
-    avatar: '/avatar2.png',
+    avatar: '/images/avatar2.png',
   },
   {
     name: '노을',
     role: 'DevOps Team Lead',
     content: '우리 팀 전체가 DevRail로 학습했고, 생산성이 50% 이상 향상되었습니다.',
-    avatar: '/avatar3.png',
+    avatar: '/images/avatar3.png',
   },
 ];
 

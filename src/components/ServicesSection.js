@@ -36,7 +36,7 @@ function CardFooter({ children }) {
   return <div>{children}</div>;
 }
 
-// Button 컴포넌트 정의
+// 버튼
 function Button({ variant, children, onClick, isDisabled }) {
   const baseStyles = "px-4 py-2 font-semibold rounded transition duration-300";
   const variantStyles =
@@ -57,7 +57,7 @@ function Button({ variant, children, onClick, isDisabled }) {
   );
 }
 
-// ServicesSection 컴포넌트 정의
+// 기술(서비스) 섹션
 const services = [
   { name: 'Docker', icon: '/services-icons/docker-icon.svg', route: 'docker' },
   { name: 'Kubernetes', icon: '/services-icons/kubernetes-icon.svg', route: 'kubernetes' },
