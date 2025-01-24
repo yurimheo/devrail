@@ -39,8 +39,7 @@ const testimonials = [
   },
 ];
 
-// React 기반 TestimonialsSection 컴포넌트
-export default function TestimonialsSection() {
+export default function ReviewsSection() {
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">

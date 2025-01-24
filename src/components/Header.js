@@ -47,10 +47,10 @@ export default function Header() {
             onMouseEnter={() => setIsHoveringPractices(true)}
             onMouseLeave={() => setIsHoveringPractices(false)}
           >
-            {isHoveringPractices ? '실습실' : '승차'}
+            {isHoveringPractices ? '실습실' : '탑승'}
           </Link>
           <Link
-            to="/enterprise"
+            to="/about"
             className={`text-gray-600 text-lg transition-colors duration-300 ${isHoveringEnterprises ? 'text-primary' : ''}`}
             onMouseEnter={() => setIsHoveringEnterprises(true)}
             onMouseLeave={() => setIsHoveringEnterprises(false)}
