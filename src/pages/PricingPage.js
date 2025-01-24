@@ -13,7 +13,7 @@ const devopsTools = [
   { name: "Kubernetes", description: "컨테이너화된 애플리케이션의 자동 배포, 스케일링 및 관리를 위한 오픈소스 플랫폼입니다.", icon: "/services-icons/kubernetes-icon.svg", learningPeriod: "20일 ~ 25일" },
   { name: "Jenkins", description: "지속적 통합 및 지속적 배포(CI/CD)를 자동화하는 오픈 소스 자동화 서버입니다.", icon: "/services-icons/jenkins-icon.svg", learningPeriod: "10일 ~ 12일" },
   { name: "ArgoCD", description: "Kubernetes를 위한 선언적 GitOps 지속적 배포 도구입니다.", icon: "/services-icons/argocd-icon.svg", learningPeriod: "7일 ~ 10일" },
-  { name: "Monitoring", description: "시스템 및 애플리케이션 성능을 실시간으로 추적하고 분석하는 도구입니다.", icon: "/services-icons/mysql-icon.svg", learningPeriod: "5일 ~ 8일" },
+  { name: "GitHub", description: "시스템 및 애플리케이션 성능을 실시간으로 추적하고 분석하는 도구입니다.", icon: "/services-icons/github-icon.svg", learningPeriod: "5일 ~ 8일" },
 ];
 
 const planFeatures = {
