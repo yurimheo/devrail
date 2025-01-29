@@ -53,7 +53,9 @@ const Login = () => {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center bg-gray-100">
+    <div>
+      <div className="w-full mx-auto pt-2 pb-16 flex justify-center bg-white">
+      <div className="container p-8 bg-white  flex justify-center">
       <div className="w-11/12 max-w-lg bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center mb-6">로그인</h2>
 
@@ -91,7 +93,7 @@ const Login = () => {
         {/* 로그인 버튼 */}
         <button
           onClick={handleLogin}
-          className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-green-600"
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-blue-600"
         >
           로그인
         </button>
@@ -102,7 +104,7 @@ const Login = () => {
             계정이 없으신가요?{' '}
             <span
               onClick={() => navigate('/register')}
-              className="text-green-500 cursor-pointer hover:underline"
+              className="text-blue-500 cursor-pointer hover:underline"
             >
               회원가입하기
             </span>
@@ -131,6 +133,8 @@ const Login = () => {
           </div>
         </div>
       </div>
+    </div>
+    </div>
     </div>
   );
 };

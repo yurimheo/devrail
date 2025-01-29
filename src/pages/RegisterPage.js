@@ -38,7 +38,9 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center bg-gray-100">
+    <div>
+      <div className="w-full mx-auto pt-2 pb-16 flex justify-center bg-white">
+      <div className="container p-8 bg-white  flex justify-center">
       <div className="w-11/12 max-w-lg bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center mb-6">회원가입</h2>
 
@@ -108,7 +110,7 @@ const RegisterPage = () => {
         {/* 회원가입 버튼 */}
         <button
           onClick={handleRegister}
-          className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-green-600"
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-blue-600"
         >
           회원가입
         </button>
@@ -119,12 +121,14 @@ const RegisterPage = () => {
             이미 계정이 있으신가요?{' '}
             <span
               onClick={() => navigate('/login')}
-              className="text-green-500 cursor-pointer hover:underline"
+              className="text-blue-500 cursor-pointer hover:underline"
             >
               로그인하기
             </span>
           </p>
         </div>
+      </div>
+      </div>
       </div>
     </div>
   );

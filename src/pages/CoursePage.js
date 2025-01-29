@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseTabs from "../components/CourseTabs";
 import CourseLearningPath from "../components/CourseLearningPath";
-import CourseIcons from "../components/CourseIcons";
+
+// 학습 코스 데이터
 import { courses } from "../data/courses";
+
+// 과목 아이콘 컴포넌트
+import CourseIcons from "../components/CourseIcons";
 
 export default function CoursePage() {
   const navigate = useNavigate();
@@ -42,9 +46,9 @@ export default function CoursePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto pt-2 pb-16 relative">
-        <div className="w-full container mx-auto shadow-xl p-8 bg-white rounded-2xl relative">
+    <div className=" min-h-screen">
+      <div className="w-full mx-auto pt-2 pb-16 flex justify-center bg-white">
+      <div className="container p-8 bg-white ">
           {/* 상단 아이콘 섹션 */}
           <CourseIcons
             courses={courses}

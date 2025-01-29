@@ -14,6 +14,7 @@ import RegisterPage from './pages/RegisterPage';
 import CoursePage from "./pages/CoursePage";
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage'; 
+import PracticePage from "./pages/PracticePage";
 
 function App() {
   return (
@@ -44,6 +45,8 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             {/* 학습 소개 페이지 */}
             <Route path="/courses/:courseId?" element={<CoursePage />} />
+            {/* 실습실 페이지 */}
+            <Route path="/practice/:courseId?" element={<PracticePage />} />
             {/* 팀 소개 페이지 */}
             <Route path="/about" element={<AboutPage />} /> 
             {/* 문의하기 페이지 */}

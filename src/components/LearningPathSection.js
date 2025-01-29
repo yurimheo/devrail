@@ -27,8 +27,14 @@ export default function LearningPathSection() {
     }
   };
 
-  const handleHover = (index) => {
-    setActiveStation(index);
+  const lastActiveIndex = learningPath.findLastIndex(station => !station.isDisabled);
+
+  const handleHover = (index, isDisabled) => {
+    if (isDisabled) {
+      setActiveStation(lastActiveIndex); // 개발 중인 역이면 GitHub 역에서 멈춤
+    } else {
+      setActiveStation(index);
+    }
   };
 
   const handleLeave = () => {
@@ -61,7 +67,7 @@ export default function LearningPathSection() {
               {/* 텍스트와 버튼 */}
               <div
                 className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}
-                onMouseEnter={() => handleHover(index)} 
+                onMouseEnter={() => handleHover(index, station.isDisabled)}
                 onMouseLeave={handleLeave} 
               >
                 <h3 className={`text-xl font-bold ${station.isDisabled ? 'text-gray-400' : 'text-black'}`}>
