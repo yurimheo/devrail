@@ -28,7 +28,18 @@ module.exports = {
       fontFamily: {
         cinzel: ['Cinzel', 'serif'],
       },
+      keyframes: {
+        road: {
+          from: { backgroundPosition: "0" },
+          to: { backgroundPosition: "-330px" },
+        },
+      },
+      animation: {
+        road: "road 0.9s infinite linear",
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 };

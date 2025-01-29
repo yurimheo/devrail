@@ -6,6 +6,8 @@ import PricingButton from "../components/PricingButton";
 import PricingCard from "../components/PricingCard";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
+import { FaUsers, FaDollarSign, FaTicketAlt } from "react-icons/fa";
+
 
 const devopsTools = [
   { name: "Docker", description: "컨테이너화 플랫폼으로 애플리케이션을 빠르게 구축, 테스트 및 배포할 수 있습니다.", icon: "/services-icons/docker-icon.svg", learningPeriod: "15일 ~ 20일" },
@@ -33,15 +35,27 @@ const PricingPage = () => {
     setBillingPeriod(billingPeriod === "월간" ? "연간" : "월간");
   };
 
-  const calculatePrice = (plan) => {
-    if (plan === "free") return "3일 무료";
+  const [enterpriseCount, setEnterpriseCount] = useState(1);
 
-    const basePrice = plan === "personal" ? 14900 : 19900; // 기본 가격
-    const multiplier = billingPeriod === "연간" ? 12 : 1; // 연간 결제는 12개월
-    const discount = billingPeriod === "연간" ? 0.85 : 1; // 연간 결제는 15% 할인
+  // 기업 카드의 고정 가격
+const enterpriseBasePrice = 4900;
 
-    return `${Math.round(basePrice * multiplier * discount).toLocaleString()}원/${billingPeriod}`;
-  };
+// 가격 계산 함수
+const calculatePrice = (plan) => {
+  if (plan === "free") return "3일 무료";
+
+  const basePrice = plan === "personal" ? 14900 : enterpriseBasePrice; // 개인: 14900원, 기업: 4900원
+  const multiplier = billingPeriod === "연간" ? 12 : 1; // 연간 결제는 12개월
+  const discount = billingPeriod === "연간" ? 0.85 : 1; // 연간 결제는 15% 할인
+
+  // 최종 가격 계산 (기업 요금제의 경우 인원 수 반영)
+  if (plan === "enterprise") {
+    return `${Math.round(basePrice * enterpriseCount * multiplier * discount).toLocaleString()}원/${billingPeriod}`;
+  }
+
+  return `${Math.round(basePrice * multiplier * discount).toLocaleString()}원/${billingPeriod}`;
+};
+  
 
   const handlePayment = () => {
     setShowQRCode(true);
@@ -64,9 +78,9 @@ const PricingPage = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="container mx-auto pt-2 pb-16">
-      <div className="w-full container mx-auto shadow-xl p-8 bg-white rounded-2xl">
+    <div className=" min-h-screen">
+      <div className="w-full mx-auto pt-2 pb-16 flex justify-center bg-white">
+      <div className="container p-8 bg-white ">
         {showQRCode ? (
           <motion.div
           className={`flex flex-col items-center justify-center p-6 rounded-lg w-full max-w-md mx-auto ${
@@ -144,44 +158,56 @@ const PricingPage = () => {
             </motion.div>
 
             <div className="pt-8">
-              <motion.div className="grid md:grid-cols-3 gap-6 mb-12">
-                {Object.keys(planLabels).map((planKey) => (
-                  <motion.div
-                  key={planKey}
-                  whileHover={{ scale: 1.05 }}
-                  className={`cursor-pointer transition-all border-2 rounded-lg ${
-                    selectedPlan === planKey ? "border-red-500" : "border-transparent"
-                  } ${selectedPlan === planKey ? "shadow-lg" : "hover:shadow-md"}`}
-                  onClick={() => setSelectedPlan(planKey)}
-                >
-                  <PricingCard>
-                    <div className="flex items-center">
-                      <h2 className="text-xl font-bold">{planLabels[planKey].korean}</h2>
-                      <span className="text-sm text-gray-500 ml-2">| {planLabels[planKey].english}</span>
-                    </div>
-                    <p className="text-3xl font-bold text-gray-800 mt-2">{calculatePrice(planKey)}</p>
-                    <ul className="text-sm text-gray-600 space-y-2 mt-4">
-                      {planFeatures[planKey].map((feature, index) => (
-                        <li key={index} className="flex items-center">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-green-500 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </PricingCard>
-                </motion.div>
-                
-                ))}
-              </motion.div>
+            <motion.div className="grid md:grid-cols-3 gap-6 mb-12">
+  {Object.keys(planLabels).map((planKey) => (
+    <motion.div
+    key={planKey}
+    whileHover={{ scale: 1.05 }}
+    className={`cursor-pointer transition-all border-2 rounded-lg ${
+      selectedPlan === planKey ? "border-blue-500" : "border-transparent"
+    } ${selectedPlan === planKey ? "shadow-lg" : "hover:shadow-md"}`}
+    onClick={() => setSelectedPlan(planKey)}
+  >
+    <PricingCard>
+      <div className="flex items-center">
+        <h2 className="text-xl font-bold">{planLabels[planKey].korean}</h2>
+        <span className="text-sm text-gray-500 ml-2">| {planLabels[planKey].english}</span>
+      </div>
+      <p className="text-3xl font-bold text-gray-800 mt-2">
+        {planKey === "enterprise"
+          ? billingPeriod === "연간"
+            ? `${Math.round(4900 * 12 * 0.85).toLocaleString()}원/연간`
+            : "4,900원/월간" // 월간은 고정
+          : calculatePrice(planKey)}
+        {planKey === "enterprise" && (
+          <span className="text-sm text-gray-500 ml-2">
+            * 1인 기준
+          </span>
+        )}
+      </p>
+      <ul className="text-sm text-gray-600 space-y-2 mt-4">
+        {planFeatures[planKey].map((feature, index) => (
+          <li key={index} className="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-green-500 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            {feature}
+          </li>
+        ))}
+      </ul>
+    </PricingCard>
+  </motion.div>
+  
+
+  ))}
+</motion.div>
 
               {selectedPlan && (
                 <motion.div
@@ -206,12 +232,87 @@ const PricingPage = () => {
                     <div className="border p-4 rounded-lg bg-yellow-50 mb-4">
                       <p className="text-sm text-yellow-800">현재 카카오페이로만 결제가 가능합니다.</p>
                     </div>
+                  
                     <div className="bg-gray-100 p-6 rounded-lg">
-                      <p className="text-lg mb-2">
-                        선택한 요금제: <span className="font-semibold">{planLabels[selectedPlan].korean}</span>
-                      </p>
-                      <p className="text-2xl font-bold text-red-500">최종 가격: {calculatePrice(selectedPlan)}</p>
-                    </div>
+  {/* 선택한 요금제 */}
+  <div className="flex items-center gap-3 mb-4">
+  <span className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+          <FaTicketAlt className="text-blue-500" size={20} />
+          선택한 요금제:
+        </span>
+    <span className="text-xl font-bold text-gray-900">{planLabels[selectedPlan].korean}</span>
+  </div>
+
+  {/* 인원 설정 */}
+  {selectedPlan === "enterprise" && (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="mb-8"
+    >
+      <div className="flex items-center gap-3 mb-2">
+      <FaUsers className="text-blue-500" size={20} />
+      <span className="text-lg font-bold">인원 설정</span>
+        <span className="text-sm text-gray-500">* 1명 이상 100명 이하로 설정 가능합니다.</span>
+      </div>
+
+      <div className="flex items-center gap-4">
+        {/* 드래그바 */}
+        <div className="relative w-full">
+          <input
+            type="range"
+            min="1"
+            max="100"
+            step="1"
+            value={enterpriseCount}
+            onChange={(e) => setEnterpriseCount(Number(e.target.value))}
+            className="appearance-none w-full h-2 bg-gray-300 rounded-full outline-none cursor-pointer transition-all"
+            style={{
+              background: `linear-gradient(to right, #3b82f6 ${(enterpriseCount / 100) * 100}%, #d1d5db ${(enterpriseCount / 100) * 100}%)`,
+            }}
+          />
+          <div className="absolute top-[-18px] left-[calc((100% + 10px) * (enterpriseCount / 100))] -translate-x-[20%] flex flex-col items-center">
+    {/* 말풍선 내용 */}
+    <div className=" border border-gray-300 bg-white text-black text-xs px-2 py-1 rounded-lg shadow-md relative">
+      {enterpriseCount}명
+      {/* 말풍선 꼬리 */}
+      <div
+    className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45"
+    style={{
+      borderBottom: "1px solid gray", // 아래 경계만 지정
+      borderRight: "1px solid gray", // 오른쪽 경계만 지정
+    }}
+  ></div>
+    </div>
+    </div>
+        </div>
+
+        {/* 입력 필드 */}
+        <input
+          type="number"
+          min="1"
+          max="100"
+          value={enterpriseCount}
+          onChange={(e) => setEnterpriseCount(Number(e.target.value))}
+          className="w-28 h-12 px-4 text-center text-lg font-semibold text-gray-800 bg-gray-50 border-2 border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder-gray-400"
+          placeholder="인원"
+        />
+      </div>
+    </motion.div>
+  )}
+
+  {/* 최종 가격 */}
+  <div className="flex items-center gap-3 mt-6">
+  <span className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+          <FaDollarSign className="text-blue-500" size={20} />
+          최종 가격:
+        </span>
+    <span className="text-2xl font-bold text-red-500">{calculatePrice(selectedPlan)}</span>
+  </div>
+</div>
+
+
                     <PricingButton
                       className={`w-full mt-6 py-3 text-lg font-semibold ${
                         selectedPlan === "free" ? "bg-red-500 hover:bg-red-600 text-white" : "bg-yellow-400 hover:bg-yellow-500 text-black"
