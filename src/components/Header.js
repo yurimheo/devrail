@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { FaTrain } from "react-icons/fa";
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function Header() {
   const [isHovering, setIsHovering] = useState(null);
   const location = useLocation();
 
   const menuItems = [
-    { path: "/pricing", label: "승차권", hoverLabel: "요금" },
-    { path: "/courses", label: "노선도", hoverLabel: "학습 소개" },
-    { path: "/practice", label: "탑승", hoverLabel: "실습실" },
-    { path: "/about", label: "기관실", hoverLabel: "팀 소개" },
-    { path: "/login", label: "승객 확인/등록", hoverLabel: "로그인/회원가입" },
+    { path: '/pricing', label: '승차권', hoverLabel: '요금' },
+    { path: '/courses', label: '노선도', hoverLabel: '학습 소개' },
+    { path: '/practice', label: '탑승', hoverLabel: '실습실' },
+    { path: '/about', label: '기관실', hoverLabel: '팀 소개' },
+    { path: '/login', label: '승객 확인/등록', hoverLabel: '로그인/회원가입' },
   ];
 
   return (
@@ -24,7 +23,7 @@ export default function Header() {
               src="/logo.png"
               alt="DevRail Logo"
               className="mx-auto"
-              style={{ width: "400px", height: "auto" }}
+              style={{ width: '400px', height: 'auto' }}
             />
           </Link>
         </div>
@@ -40,16 +39,16 @@ export default function Header() {
                 to={item.path}
                 className={`text-lg transition-colors duration-300 ${
                   isHovering === index
-                    ? "text-blue-500"
+                    ? 'text-blue-500'
                     : isActive
-                    ? "font-bold text-blue-700 border-b-2 border-blue-700"
-                    : "text-gray-600"
+                      ? 'font-bold text-blue-700 border-b-2 border-blue-700'
+                      : 'text-gray-600'
                 }`}
                 onMouseEnter={() => setIsHovering(index)}
                 onMouseLeave={() => setIsHovering(null)}
                 style={{
-                  paddingBottom: isActive ? "4px" : "0",
-                  transition: "all 0.3s ease",
+                  paddingBottom: isActive ? '4px' : '0',
+                  transition: 'all 0.3s ease',
                 }}
               >
                 {isHovering === index ? item.hoverLabel : item.label}

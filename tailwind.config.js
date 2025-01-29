@@ -33,9 +33,15 @@ module.exports = {
           from: { backgroundPosition: "0" },
           to: { backgroundPosition: "-330px" },
         },
+        gradientAnimation: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
       },
       animation: {
         road: "road 0.9s infinite linear",
+        gradient: "gradientAnimation 5s ease infinite",
       },
     },
   },

@@ -21,6 +21,18 @@ code {
     monospace;
 }
 
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-gradient-bar {
+  background-size: 200% 200%;
+  background-image: linear-gradient(to right, #3b82f6, #a855f7, #ec4899);
+  animation: gradientShift 3s ease infinite;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

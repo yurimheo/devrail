@@ -142,9 +142,9 @@ export const courses = [
   level: "Intermediate",
   prerequisites: ["기본적인 프로그래밍 지식", "Git 사용 경험"],
   outline: [
-    { day: 1, title: "Jenkins 소개", description: "Jenkins 소개 및 설치" },
+    { day: 1, title: "Jenkins 소개 및 설치", description: "Jenkins 소개 및 설치" },
     { day: 2, title: "잡 관리", description: "젠킨스 잡 생성 및 관리" },
-    { day: 3, title: "Jenkinsfile 이해", description: "Jenkinsfile 작성 및 이해" },
+    { day: 3, title: "Jenkinsfile 작성에 대한 이해 및 활용", description: "Jenkinsfile 작성 및 이해" },
     { day: 4, title: "빌드 자동화", description: "Jenkins를 통한 빌드 자동화 구현" },
     { day: 5, title: "테스트 자동화", description: "자동화된 테스트 환경 설정" },
     { day: 6, title: "배포 자동화", description: "Jenkins를 통한 배포 자동화 구현" },
