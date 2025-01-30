@@ -1,13 +1,18 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 export default function CourseTabs({ course }) {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // 과목(course)이 변경될 때 탭을 초기화
+  useEffect(() => {
+    setActiveTab('overview');
+  }, [course]);
 
   const tabs = [
-    { id: "overview", label: "과정 개요" },
-    { id: "skills", label: "습득 기술" },
-    { id: "projects", label: "프로젝트" },
+    { id: 'overview', label: '과정 개요' },
+    { id: 'skills', label: '습득 기술' },
+    { id: 'projects', label: '프로젝트' },
   ];
 
   return (
@@ -19,7 +24,7 @@ export default function CourseTabs({ course }) {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`relative flex-1 text-center py-2 cursor-pointer ${
-              activeTab === tab.id ? "text-blue-600 font-bold" : "text-gray-600"
+              activeTab === tab.id ? 'text-blue-600 font-bold' : 'text-gray-600'
             }`}
           >
             {tab.label}
@@ -29,7 +34,7 @@ export default function CourseTabs({ course }) {
               <motion.div
                 layoutId="underline"
                 className="absolute bottom-0 left-0 w-full h-1 bg-blue-600"
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               />
             )}
           </div>
@@ -38,7 +43,7 @@ export default function CourseTabs({ course }) {
 
       {/* 탭 내용 */}
       <div className="mt-6">
-        {activeTab === "overview" && (
+        {activeTab === 'overview' && (
           <div>
             <h3 className="font-bold text-lg mb-4">사전 요구사항</h3>
             <ul className="list-disc list-inside text-gray-700">
@@ -49,7 +54,7 @@ export default function CourseTabs({ course }) {
           </div>
         )}
 
-        {activeTab === "skills" && (
+        {activeTab === 'skills' && (
           <ul className="grid grid-cols-2 gap-4">
             {course.skills.map((skill, index) => (
               <li
@@ -76,7 +81,7 @@ export default function CourseTabs({ course }) {
           </ul>
         )}
 
-        {activeTab === "projects" && (
+        {activeTab === 'projects' && (
           <ul className="list-disc list-inside space-y-2">
             {course.projects.map((project, index) => (
               <li key={index}>
