@@ -16,6 +16,7 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import PracticePage from './pages/PracticePage';
 import WorkspaceInfoPage from './pages/WorkspaceInfoPage';
+import WorkspacePage from './pages/WorkspacePage';
 
 function App() {
   return (
@@ -52,9 +53,15 @@ function App() {
               <Route path="/about" element={<AboutPage />} />
               {/* 문의하기 페이지 */}
               <Route path="/contact" element={<ContactPage />} />
+
               {/* 💚 워크스페이스 💚 */}
               {/* 워크스페이스 소개 페이지 */}
               <Route path="/workspaces/info" element={<WorkspaceInfoPage />} />
+              {/* 워크스페이스 페이지 */}
+              <Route
+                path="/workspace/:workspace_id"
+                element={<WorkspacePage />}
+              />
             </Routes>
           </main>
           <Footer />
