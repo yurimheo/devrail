@@ -59,7 +59,7 @@ function App() {
               <Route path="/workspaces/info" element={<WorkspaceInfoPage />} />
               {/* 워크스페이스 페이지 */}
               <Route
-                path="/workspace/:workspace_id"
+                path="/workspaces/:workspace_id"
                 element={<WorkspacePage />}
               />
             </Routes>

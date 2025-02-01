@@ -119,23 +119,21 @@ export default function PracticePage() {
       <div className="w-full mx-auto pt-2 pb-16 flex justify-center bg-white">
         <div className="container p-8 bg-white ">
           {/* 💥임시 판단을 위한 고정 버튼 (유저 상태 변경) */}
-          <div className="fixed top-1/2 right-5 transform -translate-y-1/2">
-            <button
-              onClick={() => setIsCompanyUser((prev) => !prev)}
-              className="bg-gray-800 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-700 transition"
-            >
-              {isCompanyUser ? '기업 유저' : '개인 유저'}
-            </button>
+          <button
+            onClick={() => setIsCompanyUser((prev) => !prev)}
+            className="absolute top-4 right-4 px-3 py-1 text-xs font-semibold text-white bg-blue-500 rounded shadow-lg hover:bg-blue-600"
+          >
+            {isCompanyUser ? '기업 유저' : '개인 유저'}
+          </button>
 
-            {isCompanyUser && (
-              <button
-                onClick={() => setHasWorkspace((prev) => !prev)}
-                className="bg-gray-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-500 transition"
-              >
-                {hasWorkspace ? '워크스페이스 삭제' : '워크스페이스 생성'}
-              </button>
-            )}
-          </div>
+          {isCompanyUser && (
+            <button
+              onClick={() => setHasWorkspace((prev) => !prev)}
+              className="absolute top-12 right-4 px-3 py-1 text-xs font-semibold text-white bg-blue-500 rounded shadow-lg hover:bg-blue-600"
+            >
+              {hasWorkspace ? '워크스페이스 삭제' : '워크스페이스 생성'}
+            </button>
+          )}
 
           {/* 상단: 과목 아이콘 */}
           <CourseIcons
@@ -510,6 +508,7 @@ export default function PracticePage() {
                                     alert(
                                       `"${selectedSubject}" 워크스페이스 생성됨!`,
                                     );
+                                    navigate('/workspaces/heoyurim0322'); // 💥 임시 이동
                                     setIsModalOpen(false);
                                     setHasWorkspace(true);
                                   }
