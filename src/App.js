@@ -17,6 +17,7 @@ import ContactPage from './pages/ContactPage';
 import PracticePage from './pages/PracticePage';
 import WorkspaceInfoPage from './pages/WorkspaceInfoPage';
 import WorkspacePage from './pages/WorkspacePage';
+import WorkspaceSettingsPage from './pages/WorkspaceSettingsPage';
 
 function App() {
   return (
@@ -61,6 +62,11 @@ function App() {
               <Route
                 path="/workspaces/:workspace_id"
                 element={<WorkspacePage />}
+              />
+              {/* 워크스페이스 관리자 페이지 */}
+              <Route
+                path="/workspaces/:workspace_id/settings"
+                element={<WorkspaceSettingsPage />}
               />
             </Routes>
           </main>

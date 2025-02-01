@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from '../data/courses'; // 과목 데이터
 import { FiSettings, FiChevronRight, FiChevronLeft } from 'react-icons/fi';
 import { FaRocket } from 'react-icons/fa';
 
 export default function WorkspacePage() {
+  const navigate = useNavigate();
+
   // 💥임시 관리자 판별
   const [isAdmin, setIsAdmin] = useState(false);
   const [showHint, setShowHint] = useState(false);
@@ -18,6 +20,8 @@ export default function WorkspacePage() {
     'CI_CD_완벽_이해.pdf',
     '클라우드_배포전략.pdf',
     'DevOps_최적화_전략.pdf',
+    'Oh.. 프론트 끝나지 않아..pdf',
+    '리눅스_마스터_1급_끝장내기.pdf',
   ];
 
   const [uploadedPDFs, setUploadedPDFs] = useState([]);
@@ -165,6 +169,7 @@ export default function WorkspacePage() {
             transition={{ duration: 0.5, ease: 'easeOut', delay: 0.5 }}
             onMouseEnter={() => setShowHint(true)}
             onMouseLeave={() => setShowHint(false)}
+            onClick={() => navigate(`/workspaces/${workspace_id}/settings`)}
           >
             <FiSettings
               size={24}

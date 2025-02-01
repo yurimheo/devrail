@@ -194,6 +194,7 @@ export default function PracticePage() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="flex items-center gap-2 bg-gradient-to-br from-purple-400 to-blue-300 hover:bg-gradient-to-br hover:from-purple-500 hover:to-blue-300 text-white px-6 py-3 rounded-full transition shadow-md hover:shadow-lg"
+                        onClick={() => navigate('/workspaces/heoyurim0322')} // 💥 임시 이동
                       >
                         <FiLogIn className="w-5 h-5" />{' '}
                         {/* 워크스페이스 들어가기 아이콘 */}
@@ -508,7 +509,6 @@ export default function PracticePage() {
                                     alert(
                                       `"${selectedSubject}" 워크스페이스 생성됨!`,
                                     );
-                                    navigate('/workspaces/heoyurim0322'); // 💥 임시 이동
                                     setIsModalOpen(false);
                                     setHasWorkspace(true);
                                   }
