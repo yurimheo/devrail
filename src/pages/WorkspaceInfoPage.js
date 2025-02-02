@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import {
   FiCheckCircle,
   FiUsers,
-  FiFileText,
-  FiTerminal,
   FiBriefcase,
   FiBookOpen,
 } from 'react-icons/fi';
