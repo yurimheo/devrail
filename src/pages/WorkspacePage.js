@@ -144,15 +144,13 @@ export default function WorkspacePage() {
         {isAdmin ? '관리자 모드 해제' : '관리자 모드 활성화'}
       </button>
 
-      {/* 📂 PDF 임시 업로드 버튼 */}
-      {isAdmin && (
-        <button
-          className="absolute top-12 right-4 px-3 py-1 text-xs font-semibold text-white bg-blue-500 rounded shadow-lg hover:bg-blue-600"
-          onClick={toggleMockData}
-        >
-          {uploadedPDFs.length > 0 ? '업로드된 파일 제거' : '임시 PDF 업로드'}
-        </button>
-      )}
+      {/* 📂 PDF 목록 보기 버튼 (개인 사용자도 확인 가능) */}
+      <button
+        className="absolute top-12 right-4 px-3 py-1 text-xs font-semibold text-white bg-blue-500 rounded shadow-lg hover:bg-blue-600"
+        onClick={toggleMockData}
+      >
+        {uploadedPDFs.length > 0 ? '업로드된 파일 제거' : '임시 PDF 업로드'}
+      </button>
 
       {/* ------------------------------------------------------------------------------------------- */}
       {/* 🎀 워크스페이스 타이틀 섹션 🔽*/}
@@ -348,6 +346,21 @@ export default function WorkspacePage() {
         </motion.div>
         {/* 🎀 워크스페이스 타이틀 섹션 🔼*/}
         {/* ------------------------------------------------------------------------------------------- */}
+        <p className="text-xs text-white text-opacity-80 text-center leading-relaxed">
+          <span className="relative font-semibold ">하루 최대&nbsp;</span>
+          <span
+            className="relative px-1 border border-white rounded-md border-opacity-55 font-bold"
+            style={{
+              background:
+                'linear-gradient(to top right, rgba(89, 202, 255, 0.6), rgba(204, 160, 255, 0.8), rgba(82, 134, 47, 0.6))',
+            }}
+          >
+            8시간
+          </span>
+          , 당신만의 학습 여정을 떠나세요!
+          <br />
+          <span>탑승하세요! 새로운 가능성이 기다리고 있습니다.</span>
+        </p>
         {/* ------------------------------------------------------------------------------------------- */}
         {/* 🎀 선택된 과목 정보 헤더 섹션 🔽*/}
         <motion.div
@@ -391,6 +404,7 @@ export default function WorkspacePage() {
             </p>
           </div>
         </motion.div>
+
         {/* 🎀 선택된 과목 정보 헤더 섹션 🔼*/}
         {/* ------------------------------------------------------------------------------------------- */}
         {/* 구분선 */}
@@ -503,7 +517,6 @@ export default function WorkspacePage() {
                     }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {/* 부드러운 빛 퍼짐 효과 */}
                     <motion.div
                       className="absolute inset-0 rounded-full opacity-40"
                       style={{
@@ -538,7 +551,7 @@ export default function WorkspacePage() {
                       />
                     )}
 
-                    {/* 아이콘 변경 (접힘: > / 펼쳐짐: 반짝반짝 <>) */}
+                    {/* 아이콘 변경 */}
                     <motion.div
                       animate={{
                         textShadow: isOpen
@@ -834,8 +847,10 @@ export default function WorkspacePage() {
               </motion.h2>
             </motion.div>
 
-            <p className="text-sm text-gray-300 mt-2">
-              관리자가 업로드한 학습 자료를 활용해 맞춤형 여정을 떠나세요! 🌌
+            <p className="text-xs text-gray-300 mt-2">
+              특별히 설계된 학습 여정입니다.
+              <span className="font-semibold"> 매일 8시간씩 </span>
+              집중하며 한 걸음씩 성장하세요. 꾸준함이 곧 성공의 열쇠입니다!
             </p>
 
             {/* 구분선 */}
