@@ -60,6 +60,7 @@ function Layout() {
           <Route path="/register" element={<RegisterPage />} />
           {/* 학습 소개 페이지 */}
           <Route path="/courses/:courseId?" element={<CoursePage />} />
+          {/* 💚 실습실 💚 */}
           {/* 실습실 페이지 */}
           <Route path="/practice/:courseId?" element={<PracticePage />} />
           {/* 실습실 - 쉘 페이지 */}
