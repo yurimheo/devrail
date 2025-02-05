@@ -1,42 +1,37 @@
 const express = require("express");
-const nodemailer = require("nodemailer");
-const bodyParser = require("body-parser");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+require("dotenv").config();
+
+// ✅ Sequelize DB 연결
+const db = require("./models");
+
+// ✅ 라우트 가져오기
+const authRoutes = require("./route/authRoutes");
+const userRoutes = require("./route/userRoutes");
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(bodyParser.json());
+// ✅ CORS 설정 (여러 도메인 허용)
+app.use(cors({
+  origin: ["http://localhost:3000", "http://localhost:5001"], // 🔥 5001 추가
+  credentials: true  // ✅ 쿠키 허용
+}));
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "devrail2025@gmail.com", // 이메일 주소
-    pass: "orderofthephoenix5@", // 이메일 비밀번호
-  },
-});
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+app.use(cookieParser()); // ✅ 쿠키 파싱 미들웨어 추가
 
-app.post("/api/contact", (req, res) => {
-  const { subject, email, message } = req.body;
+// ✅ API 엔드포인트 추가
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
-  const mailOptions = {
-    from: email,
-    to: "devrail2025@gmail.com", // 이메일 주소
-    subject: `문의: ${subject}`,
-    text: `이메일: ${email}\n내용: ${message}`,
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-      return res.status(500).send("메일 전송 실패");
-    }
-    console.log("Email sent: " + info.response);
-    res.status(200).send("메일 전송 성공");
-  });
-});
+// ✅ 데이터베이스 연결 확인
+db.sequelize.sync()
+  .then(() => console.log("✅ 데이터베이스 연결 성공!"))
+  .catch(err => console.error("❌ 데이터베이스 연결 실패:", err));
 
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  console.log(`🚀 서버 실행 중: http://localhost:${port}`);
 });

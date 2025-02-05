@@ -24,19 +24,19 @@ import PracticeShellPage from './pages/PracticeShellPage';
 import WorkspaceInfoPage from './pages/WorkspaceInfoPage';
 import WorkspacePage from './pages/WorkspacePage';
 import WorkspaceSettingsPage from './pages/WorkspaceSettingsPage';
+import { UserProvider, useUser } from './context/UserContext'; // ✅ UserContext 추가
 
 function Layout() {
   const location = useLocation();
+  const { user } = useUser(); // ✅ 전역 상태에서 user 가져오기
 
   // ✅ PracticeShellPage에서 Header와 Footer 숨기기
-  const isPracticeShellPage = /^\/practice\/[^/]+\/[^/]+$/.test(
-    location.pathname,
-  );
+  const isPracticeShellPage = /^\/practice\/[^/]+\/[^/]+$/.test(location.pathname);
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* ✅ PracticeShellPage가 아닐 경우에만 Header 렌더링 */}
-      {!isPracticeShellPage && <Header />}
+      {!isPracticeShellPage && <Header />} {/* ✅ `user`를 props로 전달할 필요 없음 */}
       <main className="flex-grow">
         <Routes>
           {/* 메인 페이지 */}
@@ -56,7 +56,7 @@ function Layout() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/payment-success" element={<PaymentSuccessPage />} />
           {/* 로그인 및 회원가입 페이지 */}
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} /> {/* ✅ `setUser` props 제거 */}
           <Route path="/register" element={<RegisterPage />} />
           {/* 학습 소개 페이지 */}
           <Route path="/courses/:courseId?" element={<CoursePage />} />
@@ -93,8 +93,10 @@ function Layout() {
 
 export default function App() {
   return (
-    <Router>
-      <Layout />
-    </Router>
+    <UserProvider> {/* ✅ `UserProvider` 추가해서 전역 상태 관리 */}
+      <Router>
+        <Layout />
+      </Router>
+    </UserProvider>
   );
 }

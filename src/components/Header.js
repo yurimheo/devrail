@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from '../api';
+import { useUser } from '../context/UserContext';
 
 export default function Header() {
+  const { user, setUser } = useUser();
   const [isHovering, setIsHovering] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const menuItems = [
     { path: '/pricing', label: '승차권', hoverLabel: '요금' },
     { path: '/courses', label: '노선도', hoverLabel: '학습 소개' },
     { path: '/practice', label: '탑승', hoverLabel: '실습실' },
     { path: '/about', label: '기관실', hoverLabel: '팀 소개' },
-    { path: '/login', label: '승객 확인/등록', hoverLabel: '로그인/회원가입' },
   ];
+
+  // ✅ 로그아웃 처리
+  const handleLogout = async () => {
+    try {
+      await axios.post('/auth/logout');
+      setUser(null); // ✅ 즉시 상태 반영
+      navigate('/login');
+    } catch (err) {
+      console.error('❌ 로그아웃 실패:', err);
+    }
+  };
 
   return (
     <header className="bg-white py-8 shadow-sm">
       <div className="container mx-auto px-8 text-center">
-        {/* 로고 */}
         <div className="mb-6">
           <Link to="/">
             <img
@@ -28,10 +41,8 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* 네비게이션 메뉴 */}
         <nav className="flex justify-center space-x-6">
           {menuItems.map((item, index) => {
-            // 현재 페이지가 활성화된 메뉴와 일치하거나, `/practice`로 시작하면 활성화
             const isActive = location.pathname.startsWith(item.path);
             return (
               <Link
@@ -55,6 +66,30 @@ export default function Header() {
               </Link>
             );
           })}
+
+          {/* ✅ 로그인 상태 확인 후 버튼 표시 */}
+          {user?.id ? (
+            <div className="flex space-x-4 items-center">
+              <span className="text-gray-700 font-bold">{user.email}님</span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+              >
+                로그아웃
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className={`text-lg transition-colors duration-300 ${
+                location.pathname === '/login'
+                  ? 'font-bold text-blue-700 border-b-2 border-blue-700'
+                  : 'text-gray-600'
+              }`}
+            >
+              승객 확인/등록
+            </Link>
+          )}
         </nav>
       </div>
     </header>
