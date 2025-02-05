@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, PlusCircle } from 'lucide-react';
 import { FiLogIn, FiTrash2, FiInfo } from 'react-icons/fi'; // 로그인, 삭제, 정보 아이콘
@@ -62,6 +63,13 @@ export default function PracticePage() {
   // 🔹 DAY 클릭 시 하나만 펼쳐지도록 하기
   const handleDayClick = (index) => {
     setExpandedDayIndex((prev) => (prev === index ? -1 : index));
+  };
+
+  // 🔹 해당 과목 쉘로 이동하기
+  const handleStartPractice = (day) => {
+    if (selectedCourse) {
+      navigate(`/practice/${selectedCourse.id}/day/${day}`);
+    }
   };
 
   // 💠 워크스페이스 생성하기 모달창 ---------------------------------------------------------------------
@@ -547,7 +555,7 @@ export default function PracticePage() {
 
           {/* 선택된 코스 정보 */}
           {selectedCourse && !selectedCourse.isDisabled && (
-            <div className="text-center mt-10 ">
+            <div className="px-24 text-center mt-10 ">
               <motion.h1
                 className="text-3xl font-bold text-gray-800"
                 initial={{ opacity: 0, y: -10 }}
@@ -562,7 +570,7 @@ export default function PracticePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
-                {selectedCourse.description}
+                <ReactMarkdown>{selectedCourse.description}</ReactMarkdown>
               </motion.p>
             </div>
           )}
@@ -616,7 +624,10 @@ export default function PracticePage() {
                           <span className="text-gray-600 text-sm truncate">
                             {dayItem.description}
                           </span>
-                          <button className="ml-auto bg-blue-500 text-white px-3 py-1.5 rounded-md hover:bg-blue-600 text-sm">
+                          <button
+                            className="ml-auto bg-blue-500 text-white px-3 py-1.5 rounded-md hover:bg-blue-600 text-sm"
+                            onClick={() => handleStartPractice(dayItem.day)}
+                          >
                             시작하기
                           </button>
                         </div>
