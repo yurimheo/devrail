@@ -31,12 +31,15 @@ function Layout() {
   const { user } = useUser(); // ✅ 전역 상태에서 user 가져오기
 
   // ✅ PracticeShellPage에서 Header와 Footer 숨기기
-  const isPracticeShellPage = /^\/practice\/[^/]+\/[^/]+$/.test(location.pathname);
+  const isPracticeShellPage = /^\/practice\/[^/]+\/day\/[^/]+$/.test(
+    location.pathname,
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* ✅ PracticeShellPage가 아닐 경우에만 Header 렌더링 */}
-      {!isPracticeShellPage && <Header />} {/* ✅ `user`를 props로 전달할 필요 없음 */}
+      {!isPracticeShellPage && <Header />}{' '}
+      {/* ✅ `user`를 props로 전달할 필요 없음 */}
       <main className="flex-grow">
         <Routes>
           {/* 메인 페이지 */}
@@ -56,7 +59,8 @@ function Layout() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/payment-success" element={<PaymentSuccessPage />} />
           {/* 로그인 및 회원가입 페이지 */}
-          <Route path="/login" element={<Login />} /> {/* ✅ `setUser` props 제거 */}
+          <Route path="/login" element={<Login />} />{' '}
+          {/* ✅ `setUser` props 제거 */}
           <Route path="/register" element={<RegisterPage />} />
           {/* 학습 소개 페이지 */}
           <Route path="/courses/:courseId?" element={<CoursePage />} />
@@ -65,14 +69,13 @@ function Layout() {
           <Route path="/practice/:courseId?" element={<PracticePage />} />
           {/* 실습실 - 쉘 페이지 */}
           <Route
-            path="/practice/:subject_id/:subject_course_id"
+            path="/practice/:subject_id/day/:subject_course_id"
             element={<PracticeShellPage />}
           />
           {/* 팀 소개 페이지 */}
           <Route path="/about" element={<AboutPage />} />
           {/* 문의하기 페이지 */}
           <Route path="/contact" element={<ContactPage />} />
-
           {/* 💚 워크스페이스 💚 */}
           {/* 워크스페이스 소개 페이지 */}
           <Route path="/workspaces/info" element={<WorkspaceInfoPage />} />
@@ -93,7 +96,9 @@ function Layout() {
 
 export default function App() {
   return (
-    <UserProvider> {/* ✅ `UserProvider` 추가해서 전역 상태 관리 */}
+    <UserProvider>
+      {' '}
+      {/* ✅ `UserProvider` 추가해서 전역 상태 관리 */}
       <Router>
         <Layout />
       </Router>

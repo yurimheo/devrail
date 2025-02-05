@@ -1,25 +1,30 @@
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import CourseTabs from "../components/CourseTabs";
-import CourseLearningPath from "../components/CourseLearningPath";
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import CourseTabs from '../components/CourseTabs';
+import CourseLearningPath from '../components/CourseLearningPath';
 
 // 학습 코스 데이터
-import { courses } from "../data/courses";
+import { courses } from '../data/courses';
 
 // 과목 아이콘 컴포넌트
-import CourseIcons from "../components/CourseIcons";
+import CourseIcons from '../components/CourseIcons';
 
 export default function CoursePage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
-  const [selectedCourseId, setSelectedCourseId] = useState(courseId || courses[0].id);
+  const [selectedCourseId, setSelectedCourseId] = useState(
+    courseId || courses[0].id,
+  );
 
   // 로그인 상태 (true/false)
   const isLoggedIn = false;
   // 결제 상태 (true: 결제 완료, false: 결제 미완료)
   const isPaid = false;
 
-  const selectedCourse = courses.find((course) => course.id === selectedCourseId);
+  const selectedCourse = courses.find(
+    (course) => course.id === selectedCourseId,
+  );
 
   const handleCourseChange = (id) => {
     setSelectedCourseId(id);
@@ -29,18 +34,18 @@ export default function CoursePage() {
   const handleButtonClick = () => {
     if (!isLoggedIn) {
       // 비로그인 상태에서 로그인 페이지로 이동
-      alert("로그인 후 승차하세요!");
-      navigate("/login");
+      alert('로그인 후 승차하세요!');
+      navigate('/login');
     } else {
       // 로그인 상태에서 결제 상태에 따라 분기
       if (isPaid) {
         // 결제 완료된 경우 실습실 페이지로 이동
-        alert("실습실로 이동합니다!");
-        navigate("/practice");
+        alert('실습실로 이동합니다!');
+        navigate('/practice');
       } else {
         // 결제되지 않은 경우 학습 소개 페이지로 이동
-        alert("결제가 필요합니다!");
-        navigate("/courses");
+        alert('결제가 필요합니다!');
+        navigate('/courses');
       }
     }
   };
@@ -48,7 +53,7 @@ export default function CoursePage() {
   return (
     <div className=" min-h-screen">
       <div className="w-full mx-auto pt-2 pb-16 flex justify-center bg-white">
-      <div className="container p-8 bg-white ">
+        <div className="container p-8 bg-white ">
           {/* 상단 아이콘 섹션 */}
           <CourseIcons
             courses={courses}
@@ -65,15 +70,22 @@ export default function CoursePage() {
                 alt={`${selectedCourse.name} 아이콘`}
                 className="w-12 h-12 p-2 bg-gray-100 rounded-lg"
               />
-              <h1 className="text-3xl font-bold text-gray-800">{selectedCourse.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-800">
+                {selectedCourse.name}
+              </h1>
             </div>
-            <p className="text-gray-600 mt-2">{selectedCourse.description}</p>
+            <p className="text-gray-600 mt-2">
+              <ReactMarkdown>{selectedCourse.description}</ReactMarkdown>
+            </p>
 
             {/* 탭 */}
             <CourseTabs course={selectedCourse} />
 
             {/* 학습 일정 */}
-            <CourseLearningPath outline={selectedCourse.outline} courseId={selectedCourseId} />
+            <CourseLearningPath
+              outline={selectedCourse.outline}
+              courseId={selectedCourseId}
+            />
 
             <div className="text-right mt-8">
               <button
@@ -83,7 +95,6 @@ export default function CoursePage() {
                 지금 승차하기
               </button>
             </div>
-
           </div>
         </div>
       </div>
