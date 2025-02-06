@@ -13,42 +13,42 @@ const devopsTools = [
     name: 'Docker',
     description:
       '컨테이너화 플랫폼으로 애플리케이션을 빠르게 구축, 테스트 및 배포할 수 있습니다.',
-    icon: '/services-icons/docker-icon.svg',
-    learningPeriod: '15일 ~ 20일',
+    icon: '/images/services-icons/docker-icon.svg',
+    learningPeriod: '10일 ~ 20일',
   },
   {
     name: 'Ansible',
     description:
       '자동화 도구로 인프라 구성, 애플리케이션 배포 및 작업 조정을 간소화합니다.',
-    icon: '/services-icons/ansible-icon.svg',
-    learningPeriod: '10일 ~ 15일',
+    icon: '/images/services-icons/ansible-icon.svg',
+    learningPeriod: '10일 ~ 20일',
   },
   {
     name: 'Kubernetes',
     description:
       '컨테이너화된 애플리케이션의 자동 배포, 스케일링 및 관리를 위한 오픈소스 플랫폼입니다.',
-    icon: '/services-icons/kubernetes-icon.svg',
-    learningPeriod: '20일 ~ 25일',
+    icon: '/images/services-icons/kubernetes-icon.svg',
+    learningPeriod: '10일 ~ 20일',
   },
   {
     name: 'Jenkins',
     description:
       '지속적 통합 및 지속적 배포(CI/CD)를 자동화하는 오픈 소스 자동화 서버입니다.',
-    icon: '/services-icons/jenkins-icon.svg',
-    learningPeriod: '10일 ~ 12일',
+    icon: '/images/services-icons/jenkins-icon.svg',
+    learningPeriod: '10일 ~ 20일',
   },
   {
     name: 'ArgoCD',
     description: 'Kubernetes를 위한 선언적 GitOps 지속적 배포 도구입니다.',
-    icon: '/services-icons/argocd-icon.svg',
-    learningPeriod: '7일 ~ 10일',
+    icon: '/images/services-icons/argocd-icon.svg',
+    learningPeriod: '10일 ~ 20일',
   },
   {
-    name: 'GitHub',
+    name: 'Git',
     description:
-      '시스템 및 애플리케이션 성능을 실시간으로 추적하고 분석하는 도구입니다.',
-    icon: '/services-icons/github-icon.svg',
-    learningPeriod: '5일 ~ 8일',
+      '버전 관리 및 협업을 효과적으로 수행할 수 있도록 도와주는 도구입니다.',
+    icon: '/images/services-icons/git-icon.svg',
+    learningPeriod: '10일 ~ 20일',
   },
 ];
 

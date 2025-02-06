@@ -33,7 +33,7 @@ export default function Header() {
         <div className="mb-6">
           <Link to="/">
             <img
-              src="/logo.png"
+              src="/images/logo.png"
               alt="DevRail Logo"
               className="mx-auto"
               style={{ width: '400px', height: 'auto' }}

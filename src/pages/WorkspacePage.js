@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from '../data/courses'; // 과목 데이터
 import { FiSettings, FiChevronRight, FiChevronLeft } from 'react-icons/fi';
 import { FaRocket } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
 
 export default function WorkspacePage() {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ export default function WorkspacePage() {
     const mockUserWorkspaces = {
       kangyk00: 'docker',
       kimgun99: 'kubernetes',
-      heoyurim0322: 'github',
+      heoyurim0322: 'git',
     };
 
     // 💠 코스 아이디 가져오기
@@ -237,7 +238,7 @@ export default function WorkspacePage() {
             </div>
 
             <p className="mt-2 text-sm text-gray-800">
-              {selectedCourse.description}
+              <ReactMarkdown>{selectedCourse.description}</ReactMarkdown>
             </p>
           </div>
         </motion.div>
