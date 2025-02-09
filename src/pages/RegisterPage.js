@@ -12,10 +12,7 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
-  
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/auth";  // ✅ 수정됨
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/auth"; 
 
   const handleRegister = async () => {
     setError('');
@@ -28,11 +25,11 @@ const RegisterPage = () => {
 
     setLoading(true);
     try {
-      console.log('📩 회원가입 요청 데이터:', { name, email, password, role: 'free' });
+      console.log('📩 회원가입 요청 데이터:', { name, email, password, role: null, login_provider: 'devrail' });
 
       const response = await axios.post(
-        `${API_URL}/register`,  // ✅ `/api/register` → `/api/auth/register`
-        { name, email, password, role: 'free' },
+        `${API_URL}/register`,
+        { name, email, password, role: null, login_provider: 'devrail' }, // ✅ 변경됨
         { headers: { "Content-Type": "application/json" } }
       );
 
@@ -49,7 +46,6 @@ const RegisterPage = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="w-full mx-auto pt-2 pb-16 flex justify-center bg-white">
@@ -57,7 +53,6 @@ const RegisterPage = () => {
         <div className="w-11/12 max-w-lg bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-bold text-center mb-6">회원가입</h2>
 
-          {/* 이름 입력 */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">이름</label>
             <input
@@ -69,7 +64,6 @@ const RegisterPage = () => {
             />
           </div>
 
-          {/* 이메일 입력 */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">이메일</label>
             <input
@@ -81,7 +75,6 @@ const RegisterPage = () => {
             />
           </div>
 
-          {/* 비밀번호 입력 */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">비밀번호</label>
             <input
@@ -93,7 +86,6 @@ const RegisterPage = () => {
             />
           </div>
 
-          {/* 비밀번호 확인 입력 */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">비밀번호 확인</label>
             <input
@@ -105,11 +97,9 @@ const RegisterPage = () => {
             />
           </div>
 
-          {/* 오류 메시지 */}
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
 
-          {/* 회원가입 버튼 */}
           <button
             onClick={handleRegister}
             className={`bg-blue-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-blue-600 ${
@@ -120,7 +110,6 @@ const RegisterPage = () => {
             {loading ? '가입 중...' : '회원가입'}
           </button>
 
-          {/* 로그인 페이지 이동 */}
           <div className="text-center mt-4">
             <p className="text-sm">
               이미 계정이 있으신가요?{' '}

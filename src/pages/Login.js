@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useUser } from '../context/UserContext'; // ✅ 사용자 상태 가져오기
-import { FcGoogle } from 'react-icons/fc'; // Google 아이콘
-import { RiKakaoTalkFill } from 'react-icons/ri'; // Kakao 아이콘
-import { FiEye, FiEyeOff } from 'react-icons/fi'; // 눈 아이콘
+import { useUser } from '../context/UserContext';
+import { FcGoogle } from 'react-icons/fc';
+import { RiKakaoTalkFill } from 'react-icons/ri';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,51 +13,93 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { setUser } = useUser(); // ✅ 로그인 후 user 업데이트
+  const { setUser } = useUser();
 
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/auth";  // ✅ API URL 설정
-
-  // ✅ 카카오 SDK 초기화
-  const initKakao = () => {
-    if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init('084fde43f5f66193c70ab0718973be5e'); 
-      console.log('Kakao SDK initialized');
-    }
-  };
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/auth";
+  const KAKAO_JS_KEY = process.env.REACT_APP_KAKAO_JS_KEY;
 
   useEffect(() => {
-    initKakao();
-  }, []);
+    if (!KAKAO_JS_KEY) {
+      console.error("❌ REACT_APP_KAKAO_JS_KEY 환경 변수가 설정되지 않았습니다.");
+      return;
+    }
 
-  // ✅ 카카오 로그인 처리 함수
-  const handleKakaoLogin = () => {
-    if (!window.Kakao) {
-      console.error('Kakao SDK가 로드되지 않았습니다.');
+    const loadKakaoSDK = () => {
+      return new Promise((resolve) => {
+        if (window.Kakao) {
+          console.log("✅ Kakao SDK already loaded.");
+          resolve();
+        } else {
+          console.log("⏳ Kakao SDK loading...");
+          const script = document.createElement('script');
+          script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
+          script.async = true;
+          script.onload = () => {
+            console.log("✅ Kakao SDK loaded.");
+            resolve();
+          };
+          document.body.appendChild(script);
+        }
+      });
+    };
+
+    const initKakao = async () => {
+      await loadKakaoSDK();
+
+      if (window.Kakao && !window.Kakao.isInitialized()) {
+        window.Kakao.init(KAKAO_JS_KEY);
+        console.log("✅ Kakao SDK initialized:", window.Kakao.isInitialized());
+      }
+    };
+
+    initKakao(); // ✅ `useEffect` 내부에서 실행하여 warning 제거
+  }, []); // ✅ 빈 배열을 유지하여 한 번만 실행
+
+  const handleKakaoLogin = async () => {
+    if (!window.Kakao || !window.Kakao.Auth) {
+      console.error('❌ Kakao SDK가 로드되지 않았습니다.');
+      alert("Kakao SDK가 로드되지 않았습니다. 페이지를 새로고침하세요.");
       return;
     }
 
     window.Kakao.Auth.login({
-      success: (authObj) => {
-        console.log('카카오 로그인 성공:', authObj);
+      success: async (authObj) => {
+        console.log('✅ 카카오 로그인 성공:', authObj);
 
-        window.Kakao.API.request({
-          url: '/v2/user/me',
-          success: (res) => {
-            console.log('사용자 정보:', res);
-            alert(`카카오 로그인 성공: ${res.kakao_account.email}`);
-          },
-          fail: (error) => {
-            console.error('사용자 정보 요청 실패:', error);
-          },
-        });
+        try {
+          const res = await window.Kakao.API.request({ url: '/v2/user/me' });
+          console.log('✅ 카카오 사용자 정보:', res);
+
+          const userData = {
+            name: res.properties?.nickname || '카카오 유저',
+            email: res.kakao_account?.email,
+            provider: 'kakao',
+          };
+
+          const response = await axios.post(`${API_URL}/social-login`, userData, { withCredentials: true });
+
+          console.log('✅ 카카오 로그인 응답:', response.data);
+          setUser(response.data.user);
+          alert('카카오 로그인 성공!');
+          navigate('/');
+        } catch (error) {
+          console.error('❌ 카카오 사용자 정보 요청 실패:', error);
+        }
       },
       fail: (err) => {
-        console.error('카카오 로그인 실패:', err);
+        console.error('❌ 카카오 로그인 실패:', err);
       },
     });
   };
 
-  // ✅ 일반 로그인 처리 함수
+  const handleGoogleLogin = async () => {
+    try {
+      window.open(`${API_URL}/google-login`, "_self");
+    } catch (error) {
+      console.error("구글 로그인 오류:", error);
+    }
+  };
+
   const handleLogin = async () => {
     setError("");
     if (!email || !password) {
@@ -69,11 +111,10 @@ const Login = () => {
     try {
       const response = await axios.post(`${API_URL}/login`, { email, password }, { withCredentials: true });
 
-      console.log("✅ 로그인 응답:", response.data); // 전체 응답 데이터 출력
-
-      setUser(response.data.user); // ✅ 로그인 후 user 상태 업데이트
+      console.log("✅ 로그인 응답:", response.data);
+      setUser(response.data.user);
       alert("로그인 성공!");
-      navigate("/"); // 로그인 후 홈페이지로 이동
+      navigate("/");
     } catch (err) {
       console.error("❌ 로그인 요청 실패:", err);
       setError(err.response?.data?.message || "로그인 중 오류가 발생했습니다.");
@@ -89,7 +130,6 @@ const Login = () => {
           <div className="w-11/12 max-w-lg bg-white p-8 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold text-center mb-6">로그인</h2>
 
-            {/* 이메일 입력 */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">이메일</label>
               <input
@@ -101,7 +141,6 @@ const Login = () => {
               />
             </div>
 
-            {/* 비밀번호 입력 */}
             <div className="mb-6 relative">
               <label className="block text-sm font-medium mb-2">비밀번호</label>
               <input
@@ -120,10 +159,8 @@ const Login = () => {
               </button>
             </div>
 
-            {/* 오류 메시지 */}
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-            {/* 로그인 버튼 */}
             <button
               onClick={handleLogin}
               className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-blue-600"
@@ -132,7 +169,6 @@ const Login = () => {
               {loading ? '로그인 중...' : '로그인'}
             </button>
 
-            {/* 회원가입 버튼 */}
             <div className="text-center mt-4">
               <p className="text-sm">
                 계정이 없으신가요?{' '}
@@ -145,22 +181,16 @@ const Login = () => {
               </p>
             </div>
 
-            {/* 간편 로그인 */}
             <div className="mt-8">
               <hr className="border-t border-gray-300 mb-4" />
               <p className="text-center text-sm text-gray-500">간편 로그인</p>
               <div className="flex justify-center space-x-4 mt-4">
-                {/* 카카오톡 로그인 버튼 */}
-                <button
-                  onClick={handleKakaoLogin}
-                  className="bg-yellow-400 rounded-full p-3 shadow-md flex items-center space-x-2"
-                >
+                <button onClick={handleKakaoLogin} className="bg-yellow-400 rounded-full p-3 shadow-md flex items-center space-x-2">
                   <RiKakaoTalkFill size={24} />
                   <span>카카오 로그인</span>
                 </button>
 
-                {/* Google 로그인 버튼 */}
-                <button className="bg-white border rounded-full p-3 shadow-md flex items-center space-x-2">
+                <button onClick={handleGoogleLogin} className="bg-white border rounded-full p-3 shadow-md flex items-center space-x-2">
                   <FcGoogle size={24} />
                   <span>Google 로그인</span>
                 </button>
