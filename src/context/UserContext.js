@@ -9,14 +9,15 @@ export function UserProvider({ children }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get("/auth/check-auth");
-        setUser(res.data.user); // ✅ 상태 즉시 업데이트
+        const res = await axios.get("/auth/check-auth", { withCredentials: true });
+        setUser(res.data.user); // ✅ 로그인 후 최신 user 상태 업데이트
       } catch {
-        setUser(null); // ✅ 인증 실패 시 user 상태 초기화
+        setUser(null);
       }
     };
+  
     fetchUser();
-  }, []);
+  }, [user]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

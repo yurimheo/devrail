@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useUser } from '../context/UserContext'; // ✅ 사용자 상태 가져오기
 import { FcGoogle } from 'react-icons/fc'; // Google 아이콘
 import { RiKakaoTalkFill } from 'react-icons/ri'; // Kakao 아이콘
 import { FiEye, FiEyeOff } from 'react-icons/fi'; // 눈 아이콘
@@ -12,6 +13,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useUser(); // ✅ 로그인 후 user 업데이트
 
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/auth";  // ✅ API URL 설정
 
@@ -65,15 +67,13 @@ const Login = () => {
   
     setLoading(true);
     try {
-      const response = await axios.post(
-        `${API_URL}/login`,
-        { email, password },
-        { withCredentials: true } // ✅ 쿠키 허용
-      );
-  
-      console.log("✅ 로그인 응답:", response);
+      const response = await axios.post(`${API_URL}/login`, { email, password }, { withCredentials: true });
+
+      console.log("✅ 로그인 응답:", response.data); // 전체 응답 데이터 출력
+
+      setUser(response.data.user); // ✅ 로그인 후 user 상태 업데이트
       alert("로그인 성공!");
-      navigate(-1); // ✅ 직전 페이지로 이동
+      navigate("/"); // 로그인 후 홈페이지로 이동
     } catch (err) {
       console.error("❌ 로그인 요청 실패:", err);
       setError(err.response?.data?.message || "로그인 중 오류가 발생했습니다.");

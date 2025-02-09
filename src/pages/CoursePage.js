@@ -66,7 +66,7 @@ export default function CoursePage() {
             {/* 과목 이름과 아이콘 */}
             <div className="flex items-center space-x-4 mb-8">
               <img
-                src={`/services-icons/${selectedCourse.icon}-icon.svg`}
+                src={`/images/services-icons/${selectedCourse.icon}-icon.svg`}
                 alt={`${selectedCourse.name} 아이콘`}
                 className="w-12 h-12 p-2 bg-gray-100 rounded-lg"
               />
