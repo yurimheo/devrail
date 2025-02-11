@@ -28,6 +28,7 @@ router.post("/register", async (req, res) => {
       email,
       password: hashedPassword,
       role: role || "free",
+      login_provider: "devrail", // ✅ 기본 로그인은 devrail
     });
 
     return res.status(201).json({ message: "회원가입 성공!", user: newUser });
@@ -53,11 +54,11 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "이메일 또는 비밀번호가 잘못되었습니다." });
     }
 
-    // ✅ JWT 토큰 생성 (user.user_id -> user.id 로 변경)
+    // ✅ JWT 토큰 생성
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { user_id: user.user_id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
 
     res.cookie("token", token, {
@@ -66,22 +67,67 @@ router.post("/login", async (req, res) => {
       maxAge: 60 * 60 * 1000, // 1시간
     });
 
-    res.status(200).json({ message: "로그인 성공!", user: { id: user.id, email: user.email, role: user.role } });
+    res.status(200).json({
+      message: "로그인 성공!",
+      user: { user_id: user.user_id, email: user.email, role: user.role },
+    });
   } catch (error) {
     console.error("❌ 로그인 중 오류 발생:", error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
 
-// ✅ 로그인 유지 확인 API (수정됨)
+// ✅ 소셜 로그인 (카카오 & 구글)
+router.post("/social-login", async (req, res) => {
+  try {
+    const { email, name, provider } = req.body;
+
+    if (!email || !name || !provider) {
+      return res.status(400).json({ message: "필수 정보가 누락되었습니다." });
+    }
+
+    let user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      // ✅ 새로운 유저 생성 (자동 회원가입)
+      user = await User.create({
+        name,
+        email,
+        role: null, // 소셜 로그인 사용자는 기본적으로 null
+        login_provider: provider, // "kakao" 또는 "google"
+        password: null, // 소셜 로그인 사용자는 비밀번호 없음
+      });
+    }
+
+    // ✅ JWT 토큰 생성
+    const token = jwt.sign(
+      { user_id: user.user_id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 1000, // 1시간
+    });
+
+    res.status(200).json({ user, message: "소셜 로그인 성공" });
+  } catch (error) {
+    console.error("❌ 소셜 로그인 오류:", error);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+// ✅ 로그인 유지 확인 API
 router.get("/check-auth", authMiddleware, async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({ authenticated: false, message: "로그인이 필요합니다." });
     }
 
-    // ✅ DB에서 최신 유저 정보 가져오기
-    const user = await User.findByPk(req.user.id, { attributes: ["id", "email", "role"] });
+    // ✅ 최신 유저 정보 가져오기
+    const user = await User.findByPk(req.user.user_id, { attributes: ["user_id", "email", "role"] });
 
     if (!user) {
       return res.status(401).json({ authenticated: false, message: "사용자를 찾을 수 없습니다." });
