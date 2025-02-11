@@ -7,6 +7,8 @@ import PricingCard from '../components/PricingCard';
 import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FaUsers, FaDollarSign, FaTicketAlt } from 'react-icons/fa';
+import axios from "axios";
+import KakaoPayButton from "../components/KakaoPayButton";
 
 const devopsTools = [
   {
@@ -17,7 +19,7 @@ const devopsTools = [
     learningPeriod: '10일 ~ 20일',
   },
   {
-    name: 'Ansible',
+    name: 'Ansible',  
     description:
       '자동화 도구로 인프라 구성, 애플리케이션 배포 및 작업 조정을 간소화합니다.',
     icon: '/images/services-icons/ansible-icon.svg',
@@ -102,9 +104,27 @@ const PricingPage = () => {
     return `${Math.round(basePrice * multiplier * discount).toLocaleString()}원/${billingPeriod}`;
   };
 
-  const handlePayment = () => {
-    setShowQRCode(true);
+  const handlePayment = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/payment/kakao-pay", {
+        selectedPlan,
+        price: parseInt(calculatePrice(selectedPlan).replace(/[^0-9]/g, ""), 10), // 숫자만 추출
+        paymentId: Date.now(), // 임시 결제 ID
+      });
+  
+      const { next_redirect_pc_url } = response.data;
+  
+      // 🔥 팝업 방식으로 결제 창 띄우기
+      const popup = window.open(next_redirect_pc_url, "kakaoPayPopup", "width=500,height=700");
+  
+      if (!popup) {
+        alert("팝업 차단이 감지되었습니다. 팝업을 허용해주세요.");
+      }
+    } catch (error) {
+      console.error("❌ 카카오페이 결제 요청 실패:", error);
+    }
   };
+  
 
   const handlePaymentCompletion = () => {
     setIsLoading(true); // 로딩 시작
@@ -413,19 +433,16 @@ const PricingPage = () => {
                           </span>
                         </div>
                       </div>
-
-                      <PricingButton
-                        className={`w-full mt-6 py-3 text-lg font-semibold ${
-                          selectedPlan === 'free'
-                            ? 'bg-red-500 hover:bg-red-600 text-white'
-                            : 'bg-yellow-400 hover:bg-yellow-500 text-black'
-                        }`}
-                        onClick={handlePayment}
-                      >
-                        {selectedPlan === 'free'
-                          ? '시작하기'
-                          : '카카오페이로 결제하기'}
-                      </PricingButton>
+                      {selectedPlan !== 'free' ? (
+                        <KakaoPayButton selectedPlan={selectedPlan} price={calculatePrice(selectedPlan)} />
+                      ) : (
+                        <PricingButton
+                          className="w-full mt-6 py-3 text-lg font-semibold bg-red-500 hover:bg-red-600 text-white"
+                          onClick={handlePayment}
+                        >
+                          시작하기
+                        </PricingButton>
+                      )}
                     </div>
                   </motion.div>
                 )}

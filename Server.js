@@ -11,13 +11,13 @@ const db = require("./models");
 const authRoutes = require("./route/authRoutes");
 const userRoutes = require("./route/userRoutes");
 const paymentRoutes = require("./route/paymentRoutes");
-const planRoutes = require("./route/planRoutes"); z
+const planRoutes = require("./route/planRoutes");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:5001"],
+  origin: ["http://localhost:3000", "http://localhost:5001", "http://localhost:5000"],
   credentials: true
 }));
 
@@ -30,6 +30,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/plans", planRoutes); // ✅ 수정: "/api/plans"로 명확히 등록
+app.use("/api/payment", paymentRoutes); 
 
 // ✅ 데이터베이스 연결 확인
 db.sequelize.sync()
