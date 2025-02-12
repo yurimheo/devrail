@@ -1,50 +1,28 @@
-const express = require("express");
-const { InstancesClient } = require('@google-cloud/compute').v1;
-const WebSocket = require("ws");
+const express = require('express');
 const router = express.Router();
-const Mutex = require("async-mutex").Mutex;
+const { Mutex } = require('async-mutex');
+const { google } = require('googleapis');
+const compute = google.compute('v1');
+const { GoogleAuth } = require('google-auth-library');
+
+const auth = new GoogleAuth({
+  keyFile: process.env.GOOGLE_APPLICATION_CREDENTIAL,
+  scopes: ['https://www.googleapis.com/auth/cloud-platform']
+});
 
 const projectId = process.env.GOOGLE_CLOUD_PROJECT;
-const keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const ZONE = process.env.GOOGLE_CLOUD_ZONE;
+const MACHINE_TYPE = process.env.GOOGLE_CLOUD_MACHINE_TYPE || 'e2-medium';
 
-if (!projectId || !keyFilename) {
-  console.error("환경 변수가 설정되지 않았습니다. GOOGLE_CLOUD_PROJECT와 GOOGLE_APPLICATION_CREDENTIALS를 확인하세요.");
-  process.exit(1);
-}
-
-// InstancesClient 객체 생성
-const instancesClient = new InstancesClient({ projectId, keyFilename });
-
-const ZONE = "asia-northeast3-a";
-const MACHINE_TYPE = "e2-standard-2";
-
-// 활성 인스턴스 추적을 위한 Map
-const activeInstances = new Map();
 const instanceMutex = new Mutex();
+const activeInstances = new Map();
 
-// 웹소켓 서버 설정
-const wss = new WebSocket.Server({ noServer: true });
-
-wss.on("connection", (ws) => {
-  console.log("클라이언트 연결됨");
-  ws.on("message", (message) => console.log(`Received: ${message}`));
-  ws.on("close", () => console.log("클라이언트 연결 종료"));
-});
-
-const server = express();
-server.on("upgrade", (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit("connection", ws, request);
-  });
-});
-
-// 인스턴스 생성 요청 처리
 router.post("/create-instance", async (req, res) => {
   const release = await instanceMutex.acquire();
 
   try {
     const { userId, courseId, subjectId, day } = req.body;
-    if (!userId || !courseId || !subjectId || !day) {
+    if (!userId || !courseId) {
       return res.status(400).json({ success: false, message: "필수 파라미터 누락" });
     }
 
@@ -52,12 +30,31 @@ router.post("/create-instance", async (req, res) => {
       return res.status(400).json({ success: false, message: "이미 실행 중인 인스턴스 존재" });
     }
 
-    const instanceName = `practice-${courseId}-${day}-${userId}-${Date.now()}`.toLowerCase();
+    const instanceName = `practice-${courseId}-${userId}-${Date.now()}`.toLowerCase();
+
+    let startupScript = `#! /bin/bash
+apt-get update
+apt-get install -y docker.io
+systemctl start docker
+`;
+
+    if (subjectId === 'docker') {
+      startupScript += `docker pull your-docker-image-for-docker-lab
+docker run -d --name docker-lab your-docker-image-for-docker-lab
+`;
+    } else if (subjectId === 'jenkins') {
+      startupScript += `docker pull your-jenkins-image
+docker run -d --name jenkins-lab your-jenkins-image
+`;
+    }
+
+    const authClient = await auth.getClient();
+    compute.auth = authClient;
 
     const config = {
       project: projectId,
       zone: ZONE,
-      instanceResource: {
+      requestBody: {
         name: instanceName,
         machineType: `zones/${ZONE}/machineTypes/${MACHINE_TYPE}`,
         disks: [{
@@ -73,35 +70,31 @@ router.post("/create-instance", async (req, res) => {
           accessConfigs: [{ type: 'ONE_TO_ONE_NAT', name: 'External NAT' }],
         }],
         metadata: {
-          items: [{ key: 'startup-script', value: `#! /bin/bash\napt-get update\napt-get install -y nginx\nsystemctl start nginx` }],
+          items: [{ key: 'startup-script', value: startupScript }],
         },
-        tags: { items: ['practice-instance', courseId, `day-${day}`] },
+        tags: { items: ['practice-instance', courseId] },
       },
     };
 
     console.log(`Creating instance: ${instanceName}`);
-    const [operation] = await instancesClient.insert(config);
+    const [operation] = await compute.instances.insert(config);
 
-    // 작업 완료 대기
     await operation.promise();
 
-    // 인스턴스 메타데이터 가져오기
-    const [instance] = await instancesClient.get({
+    const [instance] = await compute.instances.get({
       project: projectId,
       zone: ZONE,
       instance: instanceName,
     });
     const externalIP = instance.networkInterfaces[0].accessConfigs[0].natIP;
 
-    activeInstances.set(userId, { instanceName, externalIP, courseId, day, createdAt: new Date() });
+    activeInstances.set(userId, { instanceName, externalIP, courseId, createdAt: new Date() });
 
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'instance-created', userId, externalIP }));
-      }
-    });
+    // Socket.IO를 통해 클라이언트에게 알림
+    req.app.get('io').to(instanceName).emit('instanceCreated', { externalIP, instanceId: instanceName });
 
-    res.json({ success: true, instanceName, externalIP, message: "인스턴스 생성 완료" });
+    res.json({ success: true, message: "인스턴스 생성 완료", externalIP, instanceId: instanceName });
+
   } catch (error) {
     console.error("Instance creation error:", error);
     res.status(500).json({ success: false, message: "인스턴스 생성 오류", error: error.message });
@@ -110,52 +103,21 @@ router.post("/create-instance", async (req, res) => {
   }
 });
 
-// 인스턴스 삭제 요청 처리
-router.post("/delete-instance", async (req, res) => {
-  const release = await instanceMutex.acquire();
-
+async function deleteInstance(instanceName) {
   try {
-    const { userId } = req.body;
-    if (!userId) return res.status(400).json({ success: false, message: "사용자 ID 필요" });
+    const authClient = await auth.getClient();
+    compute.auth = authClient;
 
-    const instance = activeInstances.get(userId);
-    if (!instance) return res.status(404).json({ success: false, message: "인스턴스 없음" });
-
-    console.log(`Deleting instance: ${instance.instanceName}`);
-    const [operation] = await instancesClient.delete({
+    const deleteOperation = await compute.instances.delete({
       project: projectId,
       zone: ZONE,
-      instance: instance.instanceName,
+      instance: instanceName,
     });
-
-    // 작업 완료 대기
-    await operation.promise();
-
-    activeInstances.delete(userId);
-
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'instance-deleted', userId, instanceName: instance.instanceName }));
-      }
-    });
-
-    res.json({ success: true, message: `인스턴스 ${instance.instanceName} 삭제 완료` });
+    await deleteOperation.promise();
+    console.log(`Instance ${instanceName} deleted successfully after 8 hours.`);
   } catch (error) {
-    console.error("Instance deletion error:", error);
-    res.status(500).json({ success: false, message: "인스턴스 삭제 오류", error: error.message });
-  } finally {
-    release();
+    console.error("Error deleting instance:", error);
   }
-});
-
-// 활성 인스턴스 조회
-router.get("/instances", async (req, res) => {
-  try {
-    const instances = Array.from(activeInstances.entries()).map(([userId, instance]) => ({ userId, ...instance }));
-    res.json({ success: true, instances });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "인스턴스 조회 오류", error: error.message });
-  }
-});
+}
 
 module.exports = router;
