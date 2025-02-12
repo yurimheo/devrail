@@ -8,6 +8,8 @@ import remarkGfm from 'remark-gfm';
 import PracticeHeader from '../components/PracticeHeader';
 import io from 'socket.io-client'; // 웹소켓 라이브러리 추가
 
+const API_URL = "http://localhost:5000/api/practice";
+
 export default function PracticeShellPage() {
   const { subject_id, subject_course_id } = useParams();
   const navigate = useNavigate();
@@ -54,16 +56,14 @@ export default function PracticeShellPage() {
     // ✅ 인스턴스 생성 자동 실행
     const createInstance = async () => {
       try {
-        const response = await fetch('/api/create-instance', {
+        const response = await fetch(`${API_URL}/create-instance`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             userId: 'testUserId', // 실제 값으로 변경
-            courseId: subject_id,
-            subjectId: currentDay?.subjectId,
-            day: currentDay?.day,
+            subjectId: currentDay?.subjectId
           }),
         });
 
@@ -100,7 +100,7 @@ export default function PracticeShellPage() {
       setTimeout(async () => {
         if (instanceId) {
           try {
-            const response = await fetch('/api/delete-instance', {
+            const response = await fetch(`${API_URL}/delete-instance`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

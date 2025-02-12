@@ -9,6 +9,7 @@ const db = require("./models");
 // ✅ 라우트 가져오기
 const authRoutes = require("./route/authRoutes");
 const userRoutes = require("./route/userRoutes");
+const practiceRoutes = require("./route/practiceRoutes");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -26,6 +27,7 @@ app.use(cookieParser()); // ✅ 쿠키 파싱 미들웨어 추가
 // ✅ API 엔드포인트 추가
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/practice", practiceRoutes);
 
 // ✅ 데이터베이스 연결 확인
 db.sequelize.sync()
