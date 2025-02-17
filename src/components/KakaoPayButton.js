@@ -1,26 +1,35 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const KakaoPayButton = ({ selectedPlan, price }) => {
+const KakaoPayButton = ({ selectedPlan, price, userEmail }) => {
     const [loading, setLoading] = useState(false);
 
     const handleKakaoPay = async () => {
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:5000/api/payment/kakao-pay", {  // ✅ 변경
+            const response = await axios.post("http://localhost:5000/api/payment/kakao-pay", {
                 selectedPlan,
-                price: parseInt(price.replace(/[^0-9]/g, ""), 10), // 숫자만 추출
-                paymentId: Date.now(), // 임시 결제 ID
+                price: parseInt(price.replace(/[^0-9]/g, ""), 10),
+                paymentId: Date.now(),
+                userEmail, // ✅ 이메일 추가
             });
 
-            const { next_redirect_pc_url } = response.data;
+            const { next_redirect_pc_url, tid } = response.data;
 
-            // 🔥 팝업 방식으로 결제 창 띄우기
             const popup = window.open(next_redirect_pc_url, "kakaoPayPopup", "width=500,height=700");
 
             if (!popup) {
                 alert("팝업 차단이 감지되었습니다. 팝업을 허용해주세요.");
             }
+
+            popup.onbeforeunload = async () => {
+                await axios.post("http://localhost:5000/api/payment/kakao-pay-approve", {
+                    tid,
+                    pg_token: "success",
+                    paymentId: Date.now(),
+                    userEmail, // ✅ 이메일 추가
+                });
+            };
         } catch (error) {
             console.error("❌ 카카오페이 요청 실패:", error);
         }

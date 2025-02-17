@@ -20,13 +20,15 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       await axios.post("/auth/logout");
-      setUser(null); // ✅ 즉시 상태 반영
+  
+      // ✅ 브라우저 쿠키 강제 삭제 (백엔드에서 삭제 안 되는 경우)
+      document.cookie = "token=; Max-Age=0; path=/;";
+      setUser(null);
       navigate("/login");
     } catch (err) {
       console.error("❌ 로그아웃 실패:", err);
     }
   };
-
   return (
     <header className="bg-white py-8 shadow-sm">
       <div className="container mx-auto px-8 text-center">

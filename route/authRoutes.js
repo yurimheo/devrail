@@ -86,36 +86,40 @@ router.post("/social-login", async (req, res) => {
       return res.status(400).json({ message: "필수 정보가 누락되었습니다." });
     }
 
+    // ✅ DB에서 사용자 조회
     let user = await User.findOne({ where: { email } });
 
+    // ✅ 없으면 자동 회원가입
     if (!user) {
-      // ✅ 새로운 유저 생성 (자동 회원가입)
+      console.log("🔹 새로운 소셜 로그인 유저 등록:", email);
       user = await User.create({
         name,
         email,
-        role: null, // 소셜 로그인 사용자는 기본적으로 null
+        role: "free", // ✅ 기본값 추가
         login_provider: provider, // "kakao" 또는 "google"
-        password: null, // 소셜 로그인 사용자는 비밀번호 없음
+        password: null, // ✅ 비밀번호 없이 회원가입 가능하도록 설정
       });
     }
 
-    // ✅ JWT 토큰 생성
+    // ✅ JWT 발급
     const token = jwt.sign(
       { user_id: user.user_id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
 
+    // ✅ 쿠키에 저장 (클라이언트에서 요청 가능)
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 1000, // 1시간
+      maxAge: 60 * 60 * 1000, // 1시간 유지
     });
 
-    res.status(200).json({ user, message: "소셜 로그인 성공" });
+    console.log("✅ 소셜 로그인 성공:", user.email);
+    return res.status(200).json({ user, message: "소셜 로그인 성공" });
   } catch (error) {
-    console.error("❌ 소셜 로그인 오류:", error);
-    res.status(500).json({ message: "서버 오류" });
+    console.error("❌ 소셜 로그인 중 오류 발생:", error);
+    return res.status(500).json({ message: "서버 오류 발생", error: error.message });
   }
 });
 
@@ -142,8 +146,9 @@ router.get("/check-auth", authMiddleware, async (req, res) => {
 
 // ✅ 로그아웃 API
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-  res.status(200).json({ message: "로그아웃 완료!" });
+  res.clearCookie("token", { path: "/", httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "Lax" });
+  res.status(200).json({ message: "✅ 로그아웃 완료! 쿠키 삭제됨" });
 });
+
 
 module.exports = router;

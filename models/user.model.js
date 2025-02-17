@@ -18,11 +18,12 @@ module.exports = (sequelize) => {
         },
         role: {
             type: DataTypes.ENUM('individual', 'corporate_member', 'free'),
-            allowNull: false
+            allowNull: true,  // ✅ NULL 허용 (기본값 설정)
+            defaultValue: "free" // ✅ 기본값 설정
         },
         password: {
             type: DataTypes.STRING(255),
-            allowNull: false
+            allowNull: true  // ✅ 소셜 로그인은 비밀번호 없이 가능해야 함
         },
         login_provider: {
             type: DataTypes.ENUM('email', 'google', 'kakao', 'naver'),

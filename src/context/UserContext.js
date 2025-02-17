@@ -10,14 +10,19 @@ export function UserProvider({ children }) {
     const fetchUser = async () => {
       try {
         const res = await axios.get("/auth/check-auth", { withCredentials: true });
-        setUser(res.data.user); // ✅ 로그인 후 최신 user 상태 업데이트
+        setUser(res.data.user);
       } catch {
         setUser(null);
       }
     };
-  
-    fetchUser();
-  }, [user]);
+
+    // ✅ 쿠키가 있는 경우만 사용자 정보 가져오기
+    if (document.cookie.split("; ").find((row) => row.startsWith("token="))) {
+      fetchUser();
+    } else {
+      setUser(null);
+    }
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
