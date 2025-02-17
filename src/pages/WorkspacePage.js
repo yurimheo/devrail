@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from '../data/courses'; // 과목 데이터
@@ -13,28 +13,9 @@ export default function WorkspacePage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
-  // 💥 임시 PDF 파일 데이터
-  const mockUploadedPDFs = [
-    '기초_Docker.pdf',
-    'Kubernetes_핵심_이론.pdf',
-    'Ansible_자동화_가이드.pdf',
-    'CI_CD_완벽_이해.pdf',
-    '클라우드_배포전략.pdf',
-    'DevOps_최적화_전략.pdf',
-    'Oh.. 프론트 끝나지 않아..pdf',
-    '리눅스_마스터_1급_끝장내기.pdf',
-  ];
-
-  const [uploadedPDFs, setUploadedPDFs] = useState([]);
-
-  // 💥 임시 데이터 추가/삭제 버튼
-  const toggleMockData = () => {
-    if (uploadedPDFs.length === 0) {
-      setUploadedPDFs(mockUploadedPDFs.map((file) => file.replace('.pdf', '')));
-    } else {
-      setUploadedPDFs([]);
-    }
-  };
+  // 📂 PDF 리스트 상태 및 과거 기록 관리
+  const [pdfFiles, setPdfFiles] = useState([]);
+  const pdfHistory = useRef({});
 
   // 💠 워크스페이스 아이디를 URL에서 가져오기
   const { workspace_id } = useParams();
@@ -44,25 +25,36 @@ export default function WorkspacePage() {
   const [expandedDayIndex, setExpandedDayIndex] = useState(null);
 
   useEffect(() => {
-    // 💥 임시 | 유저가 선택한 과목
     const mockUserWorkspaces = {
       kangyk00: 'docker',
       kimgun99: 'kubernetes',
       heoyurim0322: 'git',
     };
 
-    // 💠 코스 아이디 가져오기
-    const courseId = mockUserWorkspaces[workspace_id];
+    const currentSubject = mockUserWorkspaces[workspace_id];
 
-    // ✅ 코스 아이디가 있을 경우
-    if (courseId) {
-      // 💠 찾은 코스 정보
-      const foundCourse = courses.find((c) => c.id === courseId);
+    // 📂 과거 기록 유지 및 PDF 리스트 갱신
+    if (currentSubject) {
+      if (!pdfHistory.current[currentSubject]) {
+        pdfHistory.current[currentSubject] = generateMockPDFs(currentSubject);
+      }
+      setPdfFiles(pdfHistory.current[currentSubject]);
 
-      // 찾은 코스 선택하기
+      // 🧠 선택된 과목 설정 (기존 로직)
+      const foundCourse = courses.find((c) => c.id === currentSubject);
       setSelectedCourse(foundCourse);
     }
   }, [workspace_id]);
+
+  // ✅ PDF 리스트 생성 함수
+  const generateMockPDFs = (subject) => {
+    const pdfMap = {
+      git: ['Git_basic', 'Git_advanced'],
+      docker: ['Docker_basics', 'Docker_practice'],
+      kubernetes: ['Kubernetes_intro', 'Kubernetes_ops'],
+    };
+    return pdfMap[subject] || [];
+  };
 
   // 💠 날짜 클릭 시 확장된 일정 인덱스 토글
   const handleDayClick = (index) => {
@@ -95,14 +87,6 @@ export default function WorkspacePage() {
         }}
       >
         {isAdmin ? '관리자 모드 해제' : '관리자 모드 활성화'}
-      </button>
-
-      {/* 📂 PDF 목록 보기 버튼 (개인 사용자도 확인 가능) */}
-      <button
-        className="absolute top-12 right-4 px-3 py-1 text-xs font-semibold text-white bg-blue-500 rounded shadow-lg hover:bg-blue-600"
-        onClick={toggleMockData}
-      >
-        {uploadedPDFs.length > 0 ? '업로드된 파일 제거' : '임시 PDF 업로드'}
       </button>
 
       {/* ------------------------------------------------------------------------------------------- */}
@@ -365,6 +349,11 @@ export default function WorkspacePage() {
                             transition: { duration: 0.3, ease: 'easeInOut' },
                           }}
                           whileTap={{ scale: 0.95 }}
+                          onClick={() =>
+                            navigate(
+                              `/workspaces/${workspace_id}/${selectedCourse.id}/day/${dayItem.day}`,
+                            )
+                          }
                         >
                           시작하기
                         </motion.button>
@@ -381,152 +370,159 @@ export default function WorkspacePage() {
 
         {/* ------------------------------------------------------------------------------------------- */}
         {/* 🚀 커스텀 학습 섹션 (페이지 하단) */}
-        {isAdmin && uploadedPDFs.length > 0 && (
-          <div className="px-16 text-center">
-            {/* 구분선 */}
-            <div className="py-20 text-center">
-              <span className="text-black font-bold text-sm">
-                ●&nbsp;&nbsp;●&nbsp;&nbsp;●&nbsp;&nbsp;●&nbsp;&nbsp;●
-              </span>
-            </div>
-
-            <motion.div
-              whileHover={{
-                scale: 1.05,
-                rotate: 1,
-                transition: { duration: 0.4, ease: 'easeInOut' },
-              }}
-            >
-              {/* 타이틀 */}
-              <motion.h2
-                className="text-3xl font-bold text-black flex items-center justify-center gap-2"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                {workspace_id}님의
-                <motion.div
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    repeatType: 'reverse',
-                    ease: 'easeInOut',
-                  }}
-                >
-                  <FaRocket className="text-black drop-shadow-lg" size={28} />
-                </motion.div>
-              </motion.h2>
-
-              <motion.h2
-                className="text-5xl font-bold text-center text-black"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                {' '}
-                <motion.h2
-                  animate={{ opacity: [0.8, 1, 0.8] }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                >
-                  커스텀 학습 노선
-                </motion.h2>
-              </motion.h2>
-            </motion.div>
-
-            <p className="text-xs text-gray-800 mt-2">
-              특별히 설계된 학습 여정입니다.
-              <span className="font-semibold"> 매일 8시간씩 </span>
-              집중하며 한 걸음씩 성장하세요. 꾸준함이 곧 성공의 열쇠입니다!
-            </p>
-
-            {/* 📖 업로드된 PDF 갤러리 */}
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-6">
-              {uploadedPDFs.map((title, index) => (
-                <motion.div
-                  key={index}
-                  className="relative flex flex-col items-center justify-between px-6 py-8 w-11/12 h-56 text-center bg-gradient-to-r from-[#111111] via-[#202020] to-[#131313] border border-gray-600 shadow-lg rounded-lg transform transition-all"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  whileHover={{
-                    scale: 1.08,
-                    rotateY: [0, 10, 0],
-                    transition: { duration: 0.4, ease: 'easeInOut' },
-                  }}
-                  style={{
-                    position: 'relative',
-                    borderRadius: '20px',
-                    boxShadow:
-                      '10px 10px 25px rgba(58, 58, 58, 0.2), 0 0 10px rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  {/* 📚 책 등 */}
-                  <div
-                    className="absolute left-0 top-0 h-full w-12"
-                    style={{
-                      background: 'linear-gradient(to right, #353535, #1d1d1d)',
-                      borderRadius: '20px 0 0 20px',
-                      boxShadow: 'inset 4px 0 8px rgba(0, 0, 0, 0.5)',
-                      zIndex: 10,
-                    }}
-                  ></div>
-
-                  {/* 📜 책 제목 */}
-                  <h3 className="relative z-20 text-xl font-semibold text-white">
-                    {title}
-                  </h3>
-
-                  {/* 시작하기 버튼 */}
-                  <motion.button
-                    className="mt-auto relative overflow-hidden bg-transparent text-white px-4 py-2 rounded-md text-sm font-semibold border border-white shadow-md"
-                    whileHover={{
-                      scale: 1.05,
-
-                      transition: { duration: 0.3, ease: 'easeInOut' },
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {/* 테두리  */}
-                    <motion.div
-                      className="absolute inset-0 rounded-md border-2 border-transparent"
-                      animate={{
-                        opacity: [0.5, 1, 0.5],
-                        borderWidth: [3, 4, 3],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }}
-                    />
-
-                    {/* 반짝이는 테두리 선 효과 */}
-                    <motion.div
-                      className="absolute top-0 left-0 w-full h-full rounded-md"
-                      style={{
-                        border: '2px solid #ffecec00',
-                        maskImage:
-                          'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent)',
-                      }}
-                      animate={{
-                        transform: ['translateX(-100%)', 'translateX(100%)'],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }}
-                    />
-                    <span> 시작하기</span>
-                  </motion.button>
-                </motion.div>
-              ))}
-            </div>
+        <div className="px-16 text-center">
+          {/* 구분선 */}
+          <div className="py-20 text-center">
+            <span className="text-black font-bold text-sm">
+              ●&nbsp;&nbsp;●&nbsp;&nbsp;●&nbsp;&nbsp;●&nbsp;&nbsp;●
+            </span>
           </div>
-        )}
+
+          <motion.div
+            whileHover={{
+              scale: 1.05,
+              rotate: 1,
+              transition: { duration: 0.4, ease: 'easeInOut' },
+            }}
+          >
+            {/* 타이틀 */}
+            <motion.h2
+              className="text-3xl font-bold text-black flex items-center justify-center gap-2"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {workspace_id}님의
+              <motion.div
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  repeatType: 'reverse',
+                  ease: 'easeInOut',
+                }}
+              >
+                <FaRocket className="text-black drop-shadow-lg" size={28} />
+              </motion.div>
+            </motion.h2>
+
+            <motion.h2
+              className="text-5xl font-bold text-center text-black"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {' '}
+              <motion.h2
+                animate={{ opacity: [0.8, 1, 0.8] }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              >
+                커스텀 학습 노선
+              </motion.h2>
+            </motion.h2>
+          </motion.div>
+
+          <p className="text-xs text-gray-800 mt-2">
+            특별히 설계된 학습 여정입니다.
+            <span className="font-semibold"> 매일 8시간씩 </span>
+            집중하며 한 걸음씩 성장하세요. 꾸준함이 곧 성공의 열쇠입니다!
+          </p>
+
+          {/* 📖 업로드된 PDF 갤러리 */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-6">
+            {pdfFiles.map((fileName, index) => (
+              <motion.div
+                key={index}
+                className="relative flex flex-col items-center justify-between px-6 py-8 w-11/12 h-56 text-center bg-gradient-to-r from-[#111111] via-[#202020] to-[#131313] border border-gray-600 shadow-lg rounded-lg transform transition-all"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{
+                  scale: 1.08,
+                  rotateY: [0, 10, 0],
+                  transition: { duration: 0.4, ease: 'easeInOut' },
+                }}
+                style={{
+                  position: 'relative',
+                  borderRadius: '20px',
+                  boxShadow:
+                    '10px 10px 25px rgba(58, 58, 58, 0.2), 0 0 10px rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                {/* 📚 책 등 */}
+                <div
+                  className="absolute left-0 top-0 h-full w-12"
+                  style={{
+                    background: 'linear-gradient(to right, #353535, #1d1d1d)',
+                    borderRadius: '20px 0 0 20px',
+                    boxShadow: 'inset 4px 0 8px rgba(0, 0, 0, 0.5)',
+                    zIndex: 10,
+                  }}
+                ></div>
+
+                {/* 📜 책 제목 */}
+                <h3 className="relative z-20 text-xl font-semibold text-white">
+                  {fileName}
+                </h3>
+
+                {/* 시작하기 버튼 */}
+                <motion.button
+                  className="mt-auto relative overflow-hidden bg-transparent text-white px-4 py-2 rounded-md text-sm font-semibold border border-white shadow-md"
+                  whileHover={{
+                    scale: 1.05,
+
+                    transition: { duration: 0.3, ease: 'easeInOut' },
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() =>
+                    navigate(
+                      `/workspaces/${workspace_id}/pdfs/${selectedCourse.id}/${fileName}.pdf`,
+                      {
+                        state: { pdfFiles: pdfFiles }, // pdfFiles 배열 함께 전달
+                      },
+                    )
+                  }
+                >
+                  {/* 테두리  */}
+                  <motion.div
+                    className="absolute inset-0 rounded-md border-2 border-transparent"
+                    animate={{
+                      opacity: [0.5, 1, 0.5],
+                      borderWidth: [3, 4, 3],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  />
+
+                  {/* 반짝이는 테두리 선 효과 */}
+                  <motion.div
+                    className="absolute top-0 left-0 w-full h-full rounded-md"
+                    style={{
+                      border: '2px solid #ffecec00',
+                      maskImage:
+                        'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent)',
+                    }}
+                    animate={{
+                      transform: ['translateX(-100%)', 'translateX(100%)'],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                  <span> 시작하기</span>
+                </motion.button>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
         {/* 🚀 커스텀 학습 섹션 🔼 */}
         {/* ------------------------------------------------------------------------------------------- */}
       </div>
