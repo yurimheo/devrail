@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react"; // ✅ import 정리
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
@@ -7,6 +7,8 @@ import { RiKakaoTalkFill } from "react-icons/ri";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Login = () => {
+
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -14,49 +16,37 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { setUser } = useUser();
-
-  // API URL 변경: `http://localhost:5000/api`로 설정
+  const kakaoInitialized = useRef(false); 
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
   const KAKAO_JS_KEY = process.env.REACT_APP_KAKAO_JS_KEY;
-
+  
   useEffect(() => {
-    console.log("🔍 API 요청 URL:", API_URL);
+    if (kakaoInitialized.current) return; // ✅ 한 번만 실행되도록 설정
+    kakaoInitialized.current = true;
 
     if (!KAKAO_JS_KEY) {
       console.error("❌ REACT_APP_KAKAO_JS_KEY 환경 변수가 설정되지 않았습니다.");
       return;
     }
 
-    const loadKakaoSDK = () => {
-      return new Promise((resolve) => {
-        if (window.Kakao) {
-          console.log("✅ Kakao SDK already loaded.");
-          resolve();
-        } else {
-          console.log("⏳ Kakao SDK loading...");
-          const script = document.createElement("script");
-          script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
-          script.async = true;
-          script.onload = () => {
-            console.log("✅ Kakao SDK loaded.");
-            resolve();
-          };
-          document.body.appendChild(script);
+    if (!window.Kakao) {
+      const script = document.createElement("script");
+      script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
+      script.async = true;
+      script.onload = () => {
+        if (window.Kakao && !window.Kakao.isInitialized()) {
+          window.Kakao.init(KAKAO_JS_KEY);
+          console.log("✅ Kakao SDK initialized:", window.Kakao.isInitialized());
         }
-      });
-    };
-
-    const initKakao = async () => {
-      await loadKakaoSDK();
-
-      if (window.Kakao && !window.Kakao.isInitialized()) {
-        window.Kakao.init(KAKAO_JS_KEY);
-        console.log("✅ Kakao SDK initialized:", window.Kakao.isInitialized());
-      }
-    };
-
-    initKakao();
-  }, []);
+      };
+      document.body.appendChild(script);
+    } else if (!window.Kakao.isInitialized()) {
+      window.Kakao.init(KAKAO_JS_KEY);
+      console.log("✅ Kakao SDK initialized:", window.Kakao.isInitialized());
+    }
+  }, [KAKAO_JS_KEY]); // ✅ ESLint 경고 해결
+ // ✅ ESLint 경고 해결 (필요한 의존성 추가)
+  
 
   const handleLogin = async () => {
     setError("");
@@ -72,7 +62,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/auth/login`, // ✅ `/auth/login` 추가
+        `${API_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       );
@@ -116,7 +106,6 @@ const Login = () => {
             provider: "kakao",
           };
 
-          // ✅ 변경: `/auth/social-login` 사용
           const response = await axios.post(`${API_URL}/auth/social-login`, userData, {
             withCredentials: true,
           });
@@ -137,7 +126,6 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      // ✅ 변경: `/auth/google-login` 사용
       window.open(`${API_URL}/auth/google-login`, "_self");
     } catch (error) {
       console.error("구글 로그인 오류:", error);
@@ -184,6 +172,19 @@ const Login = () => {
           <button onClick={handleLogin} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-blue-600" disabled={loading}>
             {loading ? "로그인 중..." : "로그인"}
           </button>
+
+          {/* ✅ 회원가입 버튼 추가 */}
+          <div className="text-center mt-4">
+            <p className="text-sm">
+              계정이 없으신가요?{" "}
+              <span
+                onClick={() => navigate("/register")}
+                className="text-blue-500 cursor-pointer hover:underline"
+              >
+                회원가입하기
+              </span>
+            </p>
+          </div>
 
           <div className="mt-8">
             <hr className="border-t border-gray-300 mb-4" />
