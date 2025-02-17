@@ -1,48 +1,71 @@
+// 🧶 CourseTabs 컴포넌트
+// ✔ `course`: 선택된 과목 데이터 (과정 개요, 습득 기술, 학습 방식 포함)
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiBookOpen, FiClock, FiCheckCircle } from 'react-icons/fi';
 
 export default function CourseTabs({ course }) {
+  // 💠 기본 탭 설정
   const [activeTab, setActiveTab] = useState('overview');
 
-  // 과목(course)이 변경될 때 탭을 초기화
   useEffect(() => {
     setActiveTab('overview');
-  }, [course]);
+  }, [course.id]); // ✅ `course.id` 의존성 설정
 
+  // 💠 탭 ID 상수 정의
+  const TAB_IDS = {
+    OVERVIEW: 'overview',
+    SKILLS: 'skills',
+    HOW_IT_WORKS: 'how_it_works',
+  };
+
+  // 💠 탭 리스트
   const tabs = [
-    { id: 'overview', label: '과정 개요' },
-    { id: 'skills', label: '습득 기술' },
-    { id: 'how_it_works', label: '학습 방식' },
+    { id: TAB_IDS.OVERVIEW, label: '과정 개요' },
+    { id: TAB_IDS.SKILLS, label: '습득 기술' },
+    { id: TAB_IDS.HOW_IT_WORKS, label: '학습 방식' },
   ];
 
+  // 🧶 TabButton 컴포넌트
+  function TabButton({ id, label, activeTab, setActiveTab }) {
+    return (
+      <div
+        onClick={() => setActiveTab(id)}
+        className={`relative flex-1 text-center py-2 cursor-pointer ${
+          activeTab === id ? 'text-blue-600 font-bold' : 'text-gray-600'
+        }`}
+      >
+        {label}
+        {activeTab === id && (
+          <motion.div
+            layoutId="underline"
+            className="absolute bottom-0 left-0 w-full h-1 bg-blue-600"
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
+    // 📦 전체 컨테이너 🔽
     <div className="mt-8">
-      {/* 탭 버튼 */}
+      {/* 💌 탭 버튼 컨테이너 🔽 */}
       <div className="relative flex border-b border-gray-200">
         {tabs.map((tab) => (
-          <div
+          <TabButton
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`relative flex-1 text-center py-2 cursor-pointer ${
-              activeTab === tab.id ? 'text-blue-600 font-bold' : 'text-gray-600'
-            }`}
-          >
-            {tab.label}
-
-            {/* 선택된 탭 하단 슬라이딩 바 */}
-            {activeTab === tab.id && (
-              <motion.div
-                layoutId="underline"
-                className="absolute bottom-0 left-0 w-full h-1 bg-blue-600"
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              />
-            )}
-          </div>
+            id={tab.id}
+            label={tab.label}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
         ))}
       </div>
+      {/* 💌 탭 버튼 컨테이너 🔼 */}
 
-      {/* 탭 내용 */}
+      {/* 📃 탭 내용 컨테이너 🔽 */}
       <div className="mt-6">
         {activeTab === 'overview' && (
           <div className="bg-white rounded-2xl">
@@ -102,7 +125,7 @@ export default function CourseTabs({ course }) {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* 학습 환경 */}
+              {/* 📖 학습 환경 */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="p-4 bg-gray-100 rounded-xl flex items-center gap-3"
@@ -116,7 +139,7 @@ export default function CourseTabs({ course }) {
                 </p>
               </motion.div>
 
-              {/* 사용 시간 제한 */}
+              {/* ⏳ 사용 시간 제한 */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="p-4 bg-gray-100 rounded-xl flex items-center gap-3"
@@ -131,7 +154,7 @@ export default function CourseTabs({ course }) {
               </motion.div>
             </div>
 
-            {/* 학습 단계 */}
+            {/* 🚩 학습 단계 */}
             <h3 className="text-xl font-semibold text-gray-900 mt-6">
               학습 진행 단계
             </h3>
@@ -152,6 +175,8 @@ export default function CourseTabs({ course }) {
           </motion.div>
         )}
       </div>
+      {/* 📃 탭 내용 컨테이너 🔼 */}
     </div>
+    // 📦 전체 컨테이너 🔼
   );
 }
