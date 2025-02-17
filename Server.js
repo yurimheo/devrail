@@ -12,6 +12,7 @@ const db = require("./models");
 const authRoutes = require("./route/authRoutes");
 const userRoutes = require("./route/userRoutes");
 const practiceRoutes = require("./route/practiceRoutes");
+const workspaceRoutes = require("./route/workspaceRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -43,6 +44,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/practice", practiceRoutes);
+app.use("/api/workspace", workspaceRoutes);
 
 // Socket.IO 연결 처리
 io.on('connection', (socket) => {
