@@ -7,7 +7,7 @@ const KakaoPayButton = ({ selectedPlan, price, userEmail }) => {
     const handleKakaoPay = async () => {
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:5000/api/payment/kakao-pay", {
+            const response = await axios.post("http://localhost:5000/api/payments/kakao-pay", {
                 selectedPlan,
                 price: parseInt(price.replace(/[^0-9]/g, ""), 10),
                 paymentId: Date.now(),
@@ -23,7 +23,7 @@ const KakaoPayButton = ({ selectedPlan, price, userEmail }) => {
             }
 
             popup.onbeforeunload = async () => {
-                await axios.post("http://localhost:5000/api/payment/kakao-pay-approve", {
+                await axios.post("http://localhost:5000/api/payments/kakao-pay-approve", {
                     tid,
                     pg_token: "success",
                     paymentId: Date.now(),
