@@ -24,21 +24,28 @@ import PracticeShellPage from './pages/PracticeShellPage';
 import WorkspaceInfoPage from './pages/WorkspaceInfoPage';
 import WorkspacePage from './pages/WorkspacePage';
 import WorkspaceSettingsPage from './pages/WorkspaceSettingsPage';
+import WorkspaceShellPage from './pages/WorkspaceShellPage';
+import WorkspacePdfShellPage from './pages/WorkspacePdfShellPage';
 import { UserProvider, useUser } from './context/UserContext'; // ✅ UserContext 추가
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Layout() {
   const location = useLocation();
   const { user } = useUser(); // ✅ 전역 상태에서 user 가져오기
 
-  // ✅ PracticeShellPage에서 Header와 Footer 숨기기
-  const isPracticeShellPage = /^\/practice\/[^/]+\/day\/[^/]+$/.test(
-    location.pathname,
-  );
+  // ✅ PracticeShellPage, WorkspaceShellPage, WorkspacePdfShellPage에서 Header/Footer 숨기기
+  const isShellPage =
+    /^(\/practice\/[^/]+\/day\/[^/]+|\/workspaces\/[^/]+\/[^/]+\/day\/[^/]+|\/workspaces\/[^/]+\/pdfs\/[^/]+\/[^/]+)$/.test(
+      location.pathname,
+    );
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* ✅ PracticeShellPage가 아닐 경우에만 Header 렌더링 */}
-      {!isPracticeShellPage && <Header />}{' '}
+      {/* toast UI 컨테이너 */}
+      <ToastContainer position="top-right" autoClose={3000} />
+      {/* ✅ Shell 페이지가 아닐 때만 Header 렌더링 */}
+      {!isShellPage && <Header />}
       {/* ✅ `user`를 props로 전달할 필요 없음 */}
       <main className="flex-grow">
         <Routes>
@@ -86,10 +93,20 @@ function Layout() {
             path="/workspaces/:workspace_id/settings"
             element={<WorkspaceSettingsPage />}
           />
+          {/* 워크스페이스 쉘 페이지 */}
+          <Route
+            path="/workspaces/:workspace_id/:courseId/day/:dayNumber"
+            element={<WorkspaceShellPage />}
+          />
+          {/* 워크스페이스 PDF 쉘 페이지 */}
+          <Route
+            path="/workspaces/:workspace_id/pdfs/:course_id/:fileName"
+            element={<WorkspacePdfShellPage />}
+          />
         </Routes>
       </main>
-      {/* ✅ PracticeShellPage가 아닐 경우에만 Footer 렌더링 */}
-      {!isPracticeShellPage && <Footer />}
+      {/* ✅ Shell 페이지가 아닐 때만 Footer 렌더링 */}
+      {!isShellPage && <Footer />}
     </div>
   );
 }
