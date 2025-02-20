@@ -5,12 +5,8 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 dotenv.config();
 
-<<<<<<< HEAD
-const db = require("./models");
-=======
 // ✅ Sequelize DB 연결
 const db = require('./models');
->>>>>>> origin/develop
 
 // ✅ 미들웨어 가져오기
 const authMiddleware = require('./middleware/authMiddleware');
@@ -41,13 +37,6 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 
-<<<<<<< HEAD
-app.use("/api/auth", authRoutes);
-app.use("/api/kakao", kakaoAuthRoutes);
-app.use("/api/users", authMiddleware, userRoutes);
-app.use("/api/payments", authMiddleware, paymentRoutes);
-app.use("/api/plans", authMiddleware, planRoutes);
-=======
 // ✅ 로그인 없이 접근 가능한 API
 app.use('/api/auth', authRoutes);
 app.use('/api/kakao', kakaoAuthRoutes);
@@ -56,7 +45,6 @@ app.use('/api/kakao', kakaoAuthRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/payments', authMiddleware, paymentRoutes);
 app.use('/api/plans', authMiddleware, planRoutes);
->>>>>>> origin/develop
 
 // ✅ 데이터베이스 연결 확인
 db.sequelize
