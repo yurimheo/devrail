@@ -27,7 +27,7 @@ DevRail은 **개발자들이 실제 커맨드를 실행하면서 Docker, Kuberne
 
 > 사용자의 전체 이용 흐름을 직접 설계한 와이어프레임 및 흐름도입니다.
 
-![flowchart](./images/devrail-flowchart.png)
+![DevRail 플로우차트](https://i.ibb.co/PzFWVss4/Dev-Rail-Flowchart-drawio-2.png)
 
 ### 주요 플로우
 
